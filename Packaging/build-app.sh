@@ -41,7 +41,17 @@ MARKETING_VERSION="${MARKETING_VERSION:-1.0}"
 BUILD_NUMBER="$(read_setting CURRENT_PROJECT_VERSION)"
 BUILD_NUMBER="${BUILD_NUMBER:-1}"
 
-swift build -c "$CONFIGURATION" --product "$PRODUCT_NAME"
+SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
+SDK_VERSION="$(xcrun --sdk macosx --show-sdk-version)"
+
+# SwiftPM otherwise records the package deployment target (13.0) as the
+# linked SDK. On macOS 26/27 that makes SwiftUI render the toolbar with the
+# legacy flat controls instead of the native Liquid Glass controls.
+swift build -c "$CONFIGURATION" --product "$PRODUCT_NAME" --sdk "$SDKROOT" \
+    -Xlinker -platform_version \
+    -Xlinker macos \
+    -Xlinker 13.0 \
+    -Xlinker "$SDK_VERSION"
 
 BINARY_DIR="$(swift build --show-bin-path -c "$CONFIGURATION" --product "$PRODUCT_NAME")"
 BINARY_PATH="$BINARY_DIR/$PRODUCT_NAME"
