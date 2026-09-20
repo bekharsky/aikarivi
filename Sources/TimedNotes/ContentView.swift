@@ -22,6 +22,7 @@ struct ContentView: View {
         }
         .frame(minWidth: 420, minHeight: 320)
         .background(WidthReader(width: $width))
+        .background(WindowAppearanceConfigurator())
         .toolbar {
             // The mode picker leads: it decides what the whole gutter means, so
             // it stays put at every width, unlike the transport beside it.
@@ -49,6 +50,24 @@ struct ContentView: View {
             document.editor.focus()
         }
         .onChange(of: undoManager) { document.editor.hostUndoManager = $0 }
+    }
+}
+
+/// macOS 27 puts an opaque toolbar material behind a document window by
+/// default. Keep the native toolbar and its Liquid Glass controls, but let the
+/// white document background continue through the titlebar.
+private struct WindowAppearanceConfigurator: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSView {
+        NSView()
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        DispatchQueue.main.async {
+            guard let window = nsView.window else { return }
+            window.titlebarAppearsTransparent = true
+            window.titleVisibility = .visible
+            window.backgroundColor = .white
+        }
     }
 }
 
