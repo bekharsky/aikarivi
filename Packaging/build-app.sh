@@ -3,7 +3,6 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONFIGURATION="${1:-release}"
-INFO_TEMPLATE="$ROOT_DIR/Packaging/Info.plist"
 
 CONFIG_FILES=("$ROOT_DIR/AppInfo.xcconfig")
 if [[ -f "$ROOT_DIR/Local.xcconfig" ]]; then
@@ -41,36 +40,35 @@ MARKETING_VERSION="${MARKETING_VERSION:-1.0}"
 BUILD_NUMBER="$(read_setting CURRENT_PROJECT_VERSION)"
 BUILD_NUMBER="${BUILD_NUMBER:-1}"
 
-SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
-SDK_VERSION="$(xcrun --sdk macosx --show-sdk-version)"
+case "$CONFIGURATION" in
+    debug|Debug) XCODE_CONFIGURATION="Debug" ;;
+    release|Release) XCODE_CONFIGURATION="Release" ;;
+    *) echo "Unsupported configuration: $CONFIGURATION" >&2; exit 1 ;;
+esac
 
-# SwiftPM otherwise records the package deployment target (13.0) as the
-# linked SDK. On macOS 26/27 that makes SwiftUI render the toolbar with the
-# legacy flat controls instead of the native Liquid Glass controls.
-swift build -c "$CONFIGURATION" --product "$PRODUCT_NAME" --sdk "$SDKROOT" \
-    -Xlinker -platform_version \
-    -Xlinker macos \
-    -Xlinker 13.0 \
-    -Xlinker "$SDK_VERSION"
+# Build the Xcode target, not a bare SwiftPM executable. Xcode owns the
+# macOS SDK linkage and asset-catalog compilation; both are required for the
+# native Liquid Glass toolbar and the AppIcon.icns inside the final bundle.
+DERIVED_DATA_DIR="$ROOT_DIR/.build/xcode"
+xcodebuild \
+    -project "$ROOT_DIR/Tickline.xcodeproj" \
+    -scheme "$PRODUCT_NAME" \
+    -configuration "$XCODE_CONFIGURATION" \
+    -derivedDataPath "$DERIVED_DATA_DIR" \
+    CODE_SIGNING_ALLOWED=NO \
+    build
 
-BINARY_DIR="$(swift build --show-bin-path -c "$CONFIGURATION" --product "$PRODUCT_NAME")"
-BINARY_PATH="$BINARY_DIR/$PRODUCT_NAME"
-
-if [[ ! -f "$BINARY_PATH" ]]; then
-    echo "Could not find built executable for $PRODUCT_NAME" >&2
+SOURCE_APP="$DERIVED_DATA_DIR/Build/Products/$XCODE_CONFIGURATION/$PRODUCT_NAME.app"
+if [[ ! -d "$SOURCE_APP" ]]; then
+    echo "Could not find built app bundle for $PRODUCT_NAME" >&2
     exit 1
 fi
 
 APP_DIR="$ROOT_DIR/dist/$PRODUCT_NAME.app"
-CONTENTS_DIR="$APP_DIR/Contents"
-MACOS_DIR="$CONTENTS_DIR/MacOS"
-RESOURCES_DIR="$CONTENTS_DIR/Resources"
-INFO_PLIST="$CONTENTS_DIR/Info.plist"
+INFO_PLIST="$APP_DIR/Contents/Info.plist"
 
 rm -rf "$APP_DIR"
-mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
-cp "$BINARY_PATH" "$MACOS_DIR/$PRODUCT_NAME"
-cp "$INFO_TEMPLATE" "$INFO_PLIST"
+cp -R "$SOURCE_APP" "$APP_DIR"
 
 /usr/libexec/PlistBuddy -c "Set :CFBundleExecutable $PRODUCT_NAME" "$INFO_PLIST"
 /usr/libexec/PlistBuddy -c "Set :CFBundleName $DISPLAY_NAME" "$INFO_PLIST"
