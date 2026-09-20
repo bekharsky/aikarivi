@@ -42,6 +42,7 @@ struct ContentView: View {
                 CopyStampsButton(editor: document.editor, copy: document.copyWithStamps)
             }
         }
+        .toolbarRole(.editor)
         .focusedSceneValue(\.timedNote, document)
         .onAppear {
             // Editing through the document's undo manager is also what tells

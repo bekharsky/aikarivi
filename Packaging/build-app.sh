@@ -43,10 +43,8 @@ BUILD_NUMBER="${BUILD_NUMBER:-1}"
 
 swift build -c "$CONFIGURATION" --product "$PRODUCT_NAME"
 
-BINARY_PATH="$ROOT_DIR/.build/$CONFIGURATION/$PRODUCT_NAME"
-if [[ ! -f "$BINARY_PATH" ]]; then
-    BINARY_PATH="$(find "$ROOT_DIR/.build" -path "*/$CONFIGURATION/$PRODUCT_NAME" -type f -print -quit)"
-fi
+BINARY_DIR="$(swift build --show-bin-path -c "$CONFIGURATION" --product "$PRODUCT_NAME")"
+BINARY_PATH="$BINARY_DIR/$PRODUCT_NAME"
 
 if [[ ! -f "$BINARY_PATH" ]]; then
     echo "Could not find built executable for $PRODUCT_NAME" >&2
