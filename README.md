@@ -125,13 +125,14 @@ and seconds and so are read as plain text.
 ## Build and run
 
 ```sh
-swift build                     # libraries + app
-swift test                      # libraries + editor tests, no UI session needed
-./Packaging/build-app.sh        # dist/Tickline.app, ad-hoc signed
-open dist/Tickline.app
+xcodebuild -project Tickline.xcodeproj -scheme Tickline \
+  -configuration Debug \
+  -derivedDataPath .build/xcode \
+  CODE_SIGNING_ALLOWED=NO build
+open .build/xcode/Build/Products/Debug/Tickline.app
 ```
 
-For an Xcode/App Store build, use the shared `Tickline` scheme:
+For tests or a release archive, use the same Xcode scheme:
 
 ```sh
 xcodebuild -project Tickline.xcodeproj -scheme Tickline \
