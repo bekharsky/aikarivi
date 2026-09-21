@@ -113,6 +113,39 @@ final class TimedNoteDocument: ReferenceFileDocument {
         try? editor.stampedText(selectionOnly: false).write(to: url, atomically: true, encoding: .utf8)
     }
 
+    /// A text file dropped onto an empty window becomes a real document. A
+    /// non-empty note keeps its document identity and receives the file text at
+    /// the end instead.
+    @MainActor
+    func handleDroppedFile(at url: URL) {
+        guard url.isFileURL else { return }
+
+        let didStartAccessing = url.startAccessingSecurityScopedResource()
+        defer {
+            if didStartAccessing { url.stopAccessingSecurityScopedResource() }
+        }
+
+        guard let data = try? Data(contentsOf: url),
+              let text = String(data: data, encoding: .utf8)
+        else {
+            NSSound.beep()
+            return
+        }
+
+        if editor.textView.string.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            NSDocumentController.shared.openDocument(withContentsOf: url, display: true) { _, _, error in
+                if error != nil { NSSound.beep() }
+            }
+        } else {
+            editor.appendText(text)
+        }
+    }
+
+    @MainActor
+    func appendDroppedText(_ text: String) {
+        editor.appendText(text)
+    }
+
     private func store(mirror snapshot: NoteSnapshot) {
         mirrorLock.lock()
         mirror = snapshot

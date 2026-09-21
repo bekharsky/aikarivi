@@ -1,6 +1,8 @@
+import AppKit
 import SwiftUI
 import TimedNotesCore
 import TimedNotesEditor
+import UniformTypeIdentifiers
 
 struct ContentView: View {
     @ObservedObject var document: TimedNoteDocument
@@ -23,6 +25,11 @@ struct ContentView: View {
         .frame(minWidth: 420, minHeight: 320)
         .background(WidthReader(width: $width))
         .background(WindowAppearanceConfigurator())
+        .onDrop(
+            of: [UTType.fileURL.identifier, UTType.text.identifier, UTType.plainText.identifier],
+            isTargeted: nil,
+            perform: handleDrop
+        )
         .toolbar {
             // The mode picker leads: it decides what the whole gutter means, so
             // it stays put at every width, unlike the transport beside it.
@@ -44,13 +51,53 @@ struct ContentView: View {
         }
         .toolbarRole(.editor)
         .focusedSceneValue(\.timedNote, document)
-        .onAppear {
+        .onAppear { [document] in
             // Editing through the document's undo manager is also what tells
             // SwiftUI the note is dirty and enables Save.
             document.editor.hostUndoManager = undoManager
+            document.editor.onFileDrop = { [weak document] url in
+                document?.handleDroppedFile(at: url)
+            }
             document.editor.focus()
         }
         .onChange(of: undoManager) { document.editor.hostUndoManager = $0 }
+    }
+
+    private func handleDrop(_ providers: [NSItemProvider]) -> Bool {
+        guard let provider = providers.first else { return false }
+
+        if provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
+            provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, _ in
+                guard let url = Self.fileURL(from: item) else { return }
+                DispatchQueue.main.async {
+                    document.handleDroppedFile(at: url)
+                }
+            }
+            return true
+        }
+
+        let textType = provider.hasItemConformingToTypeIdentifier(UTType.plainText.identifier)
+            ? UTType.plainText.identifier
+            : UTType.text.identifier
+        provider.loadDataRepresentation(forTypeIdentifier: textType) { data, _ in
+            guard let data, let text = String(data: data, encoding: .utf8) else { return }
+            DispatchQueue.main.async {
+                document.appendDroppedText(text)
+            }
+        }
+        return true
+    }
+
+    private static func fileURL(from item: NSSecureCoding?) -> URL? {
+        if let url = item as? URL { return url }
+        if let url = item as? NSURL { return url as URL }
+        if let data = item as? Data {
+            return URL(dataRepresentation: data, relativeTo: nil)
+        }
+        if let path = item as? String {
+            return URL(fileURLWithPath: path)
+        }
+        return nil
     }
 }
 

@@ -45,6 +45,12 @@ public final class NoteEditorController: NSObject, ObservableObject, NSTextViewD
     /// document as needing a save.
     public weak var hostUndoManager: UndoManager?
 
+    /// Called when a text file is dropped directly onto the editor surface.
+    /// The document decides whether that opens a new note or appends here.
+    public var onFileDrop: ((URL) -> Void)? {
+        didSet { timedTextView.onFileDrop = onFileDrop }
+    }
+
     let scrollView = NSScrollView()
     let gutter = StampGutterView()
 
@@ -134,6 +140,22 @@ public final class NoteEditorController: NSObject, ObservableObject, NSTextViewD
         textView.setSelectedRange(NSRange(location: storage.length, length: 0))
         refreshGutter(resize: true)
         updateCaretState()
+    }
+
+    /// Appends plain text dropped into an existing note. Going through the
+    /// text view keeps the normal edit, undo, and timestamp paths intact.
+    public func appendText(_ text: String) {
+        let normalized = text
+            .replacingOccurrences(of: "\r\n", with: "\n")
+            .replacingOccurrences(of: "\r", with: "\n")
+        guard !normalized.isEmpty else { return }
+
+        let separator = storage.string.isEmpty || storage.string.hasSuffix("\n") ? "" : "\n"
+        let insertion = separator + normalized
+        let end = NSRange(location: storage.length, length: 0)
+        textView.insertText(insertion, replacementRange: end)
+        textView.scrollRangeToVisible(NSRange(location: storage.length, length: 0))
+        focus()
     }
 
     /// Text with the stamps put back in front of each line. Falls back to the

@@ -52,6 +52,17 @@ final class TypingTests: XCTestCase {
         XCTAssertGreaterThan(ink, 200, "typed text should be drawn")
     }
 
+    func testDroppedTextAppendsAtTheEndOfTheNote() {
+        let controller = makeController()
+        controller.stampMode = .clock
+        controller.textView.insertText("existing", replacementRange: NSRange(location: 0, length: 0))
+
+        controller.appendText("dropped\ntext")
+
+        XCTAssertEqual(controller.textView.string, "existing\ndropped\ntext")
+        XCTAssertEqual(controller.lineCount, 3)
+    }
+
     func testReturnStartsANewStampedLine() {
         let controller = makeController()
         _ = timerRunning(on: controller)
