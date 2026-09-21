@@ -7,3 +7,10 @@ DerivedData/
 Local.xcconfig
 **/xcuserdata/
 *.xcworkspace/
+
+# Local screenshot scratch and packaged previews.
+/*.png
+/*.tar.gz
+
+# The website keeps its own Sites checkout; GitHub Pages uses the clean docs/ export.
+/site/
