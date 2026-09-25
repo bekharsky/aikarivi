@@ -1,5 +1,5 @@
 import AppKit
-import TimedNotesCore
+import AikariviCore
 
 /// Left gutter that prints each line's stamp.
 ///

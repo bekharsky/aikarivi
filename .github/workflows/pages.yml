@@ -1,4 +1,4 @@
-name: Deploy Tickline site to GitHub Pages
+name: Deploy Aikarivi site to GitHub Pages
 
 on:
   push:

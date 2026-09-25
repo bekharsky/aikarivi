@@ -1,5 +1,5 @@
 import XCTest
-@testable import TimedNotesCore
+@testable import AikariviCore
 
 /// Drives the bookkeeper the same way the text view does: `prepareEdit` on the
 /// old text, then `commitEdit` on the new one.

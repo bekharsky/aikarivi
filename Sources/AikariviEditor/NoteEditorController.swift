@@ -1,6 +1,6 @@
 import AppKit
 import Combine
-import TimedNotesCore
+import AikariviCore
 
 /// Owns the TextKit stack and drives `StampBookkeeper` from the text view.
 ///

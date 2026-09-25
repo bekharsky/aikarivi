@@ -28,11 +28,11 @@ read_setting() {
 }
 
 PRODUCT_NAME="$(read_setting PRODUCT_NAME)"
-PRODUCT_NAME="${PRODUCT_NAME:-Tickline}"
+PRODUCT_NAME="${PRODUCT_NAME:-Aikarivi}"
 DISPLAY_NAME="$(read_setting APP_DISPLAY_NAME)"
 DISPLAY_NAME="${DISPLAY_NAME:-$PRODUCT_NAME}"
 BUNDLE_IDENTIFIER="$(read_setting APP_PRODUCT_BUNDLE_IDENTIFIER)"
-BUNDLE_IDENTIFIER="${BUNDLE_IDENTIFIER:-com.example.tickline}"
+BUNDLE_IDENTIFIER="${BUNDLE_IDENTIFIER:-com.example.aikarivi}"
 COPYRIGHT="$(read_setting APP_PRODUCT_COPYRIGHT)"
 CODE_SIGN_IDENTITY="$(read_setting APP_CODE_SIGN_IDENTITY)"
 MARKETING_VERSION="$(read_setting MARKETING_VERSION)"
@@ -51,7 +51,7 @@ esac
 # native Liquid Glass toolbar and the AppIcon.icns inside the final bundle.
 DERIVED_DATA_DIR="$ROOT_DIR/.build/xcode"
 xcodebuild \
-    -project "$ROOT_DIR/Tickline.xcodeproj" \
+    -project "$ROOT_DIR/Aikarivi.xcodeproj" \
     -scheme "$PRODUCT_NAME" \
     -configuration "$XCODE_CONFIGURATION" \
     -derivedDataPath "$DERIVED_DATA_DIR" \
@@ -67,6 +67,7 @@ fi
 APP_DIR="$ROOT_DIR/dist/$PRODUCT_NAME.app"
 INFO_PLIST="$APP_DIR/Contents/Info.plist"
 
+mkdir -p "$ROOT_DIR/dist"
 rm -rf "$APP_DIR"
 cp -R "$SOURCE_APP" "$APP_DIR"
 

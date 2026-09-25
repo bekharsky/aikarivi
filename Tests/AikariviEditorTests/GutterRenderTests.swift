@@ -1,8 +1,8 @@
 import AppKit
 import SwiftUI
 import XCTest
-@testable import TimedNotesEditor
-@testable import TimedNotesCore
+@testable import AikariviEditor
+@testable import AikariviCore
 
 /// Renders the editor offscreen. This is the part that cannot be checked by
 /// reasoning alone: stamps and text only exist on screen, so the drawing has to

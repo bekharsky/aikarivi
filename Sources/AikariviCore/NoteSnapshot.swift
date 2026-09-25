@@ -101,6 +101,7 @@ public enum NoteExporter {
 public struct SessionStore {
     public let fileURL: URL
 
+    // The historical storage location must remain readable for session recovery.
     public init(directoryName: String = "TimedNotes", fileName: String = "session.json") {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? FileManager.default.temporaryDirectory

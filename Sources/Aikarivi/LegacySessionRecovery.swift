@@ -1,5 +1,5 @@
 import AppKit
-import TimedNotesCore
+import AikariviCore
 
 /// Before notes were documents, there was a single autosaved session in
 /// Application Support. Anything left in it is written out as a real file once,

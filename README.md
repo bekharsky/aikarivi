@@ -1,4 +1,7 @@
-# Tickline
+# Aikarivi
+
+[Website](https://bekharsky.github.io/aikarivi/) ·
+[GitHub](https://github.com/bekharsky/aikarivi)
 
 A native macOS notepad that stamps each line with a time. It can count down
 a session timer, or it can stamp the time of day like an interstitial journal.
@@ -87,7 +90,7 @@ column, so one screen line stays one line of output.
 ## Files
 
 Notes are ordinary Markdown documents: ⌘N, ⌘O, ⌘S, Save As, several windows at
-once, each with its own timer. Tickline does not invent an extension. It writes
+once, each with its own timer. Aikarivi does not invent an extension. It writes
 `.md`, and on open it looks at the text: a front matter block and `[HH:MM:SS.mmm]`
 prefixes are a timed note, everything else is unstamped Markdown. Any editor or
 Quick Look can read the file:
@@ -125,19 +128,19 @@ and seconds and so are read as plain text.
 ## Build and run
 
 ```sh
-xcodebuild -project Tickline.xcodeproj -scheme Tickline \
+xcodebuild -project Aikarivi.xcodeproj -scheme Aikarivi \
   -configuration Debug \
   -derivedDataPath .build/xcode \
   CODE_SIGNING_ALLOWED=NO build
-open .build/xcode/Build/Products/Debug/Tickline.app
+open .build/xcode/Build/Products/Debug/Aikarivi.app
 ```
 
 For tests or a release archive, use the same Xcode scheme:
 
 ```sh
-xcodebuild -project Tickline.xcodeproj -scheme Tickline \
+xcodebuild -project Aikarivi.xcodeproj -scheme Aikarivi \
   -destination 'platform=macOS' test
-xcodebuild -project Tickline.xcodeproj -scheme Tickline \
+xcodebuild -project Aikarivi.xcodeproj -scheme Aikarivi \
   -configuration Release archive
 ```
 
@@ -167,15 +170,28 @@ Xcode Cloud. The production bundle identifier and Team ID in `AppInfo.xcconfig`
 are public application metadata; certificates and private keys remain in the
 developer keychain and Apple services.
 
+The application bundle identifier and the legacy document type identifier retain
+their original values for App Store, sandbox, and document compatibility. The
+product, executable, Xcode scheme, and Swift modules are named Aikarivi.
+
 Requires macOS 13 or later.
+
+## Website
+
+The GitHub Pages site is served from `docs/`. Changes pushed to `main` publish
+automatically through `.github/workflows/pages.yml` at
+<https://bekharsky.github.io/aikarivi/>.
+
+The download is `docs/assets/Aikarivi-macOS.zip`, containing the Xcode-built
+`Aikarivi.app` with its icon and frameworks.
 
 ## Layout
 
 | Target | Contents |
 | --- | --- |
-| `TimedNotesCore` | Timer, stamp formatting, and the bookkeeping that keeps stamps aligned with the text through arbitrary edits. No UI. |
-| `TimedNotesEditor` | The AppKit text view and the gutter that draws the stamps. The gutter is a plain sibling view with its own layout, not an `NSRulerView`: the ruler tiling machinery fights SwiftUI's sizing of the scroll view and offsets the clip view until the text stops being drawn at all. |
-| `TimedNotes` | SwiftUI app, toolbar, menu commands. The product name on disk is Tickline. |
+| `AikariviCore` | Timer, stamp formatting, and the bookkeeping that keeps stamps aligned with the text through arbitrary edits. No UI. |
+| `AikariviEditor` | The AppKit text view and the gutter that draws the stamps. The gutter is a plain sibling view with its own layout, not an `NSRulerView`: the ruler tiling machinery fights SwiftUI's sizing of the scroll view and offsets the clip view until the text stops being drawn at all. |
+| `Aikarivi` | SwiftUI app, toolbar, menu commands. The product name on disk is Aikarivi. |
 
 The split exists so the risky parts can be tested: `StampBookkeeperTests` replays
 real typing sequences, `TypingTests` types into a live text view, and

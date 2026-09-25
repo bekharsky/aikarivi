@@ -1,9 +1,9 @@
 import SwiftUI
-import TimedNotesCore
-import TimedNotesEditor
+import AikariviCore
+import AikariviEditor
 
 @main
-struct TimedNotesApp: App {
+struct AikariviApp: App {
     init() {
         LegacySessionRecovery.scheduleOnce()
     }

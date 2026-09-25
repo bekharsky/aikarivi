@@ -1,5 +1,5 @@
 import XCTest
-@testable import TimedNotesCore
+@testable import AikariviCore
 
 final class StampFormatterTests: XCTestCase {
     func testFullClockFormat() {

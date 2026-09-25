@@ -63,7 +63,7 @@
         </dict>
         <dict>
             <key>CFBundleTypeName</key>
-            <string>Tickline Note</string>
+            <string>Aikarivi Note</string>
             <key>CFBundleTypeRole</key>
             <string>Editor</string>
             <key>LSHandlerRank</key>
@@ -80,7 +80,7 @@
             <key>UTTypeIdentifier</key>
             <string>com.kharion.tickline.legacy-note</string>
             <key>UTTypeDescription</key>
-            <string>Tickline Note</string>
+            <string>Aikarivi Note</string>
             <key>UTTypeConformsTo</key>
             <array>
                 <string>public.plain-text</string>

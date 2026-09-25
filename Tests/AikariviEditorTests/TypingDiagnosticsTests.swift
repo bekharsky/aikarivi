@@ -1,7 +1,7 @@
 import AppKit
 import XCTest
-@testable import TimedNotesEditor
-@testable import TimedNotesCore
+@testable import AikariviEditor
+@testable import AikariviCore
 
 /// Types into the real text view, the way the app does.
 @MainActor

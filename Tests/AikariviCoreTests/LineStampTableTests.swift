@@ -1,5 +1,5 @@
 import XCTest
-@testable import TimedNotesCore
+@testable import AikariviCore
 
 final class LineStampTableTests: XCTestCase {
     private func stamp(_ remaining: TimeInterval) -> LineStamp {

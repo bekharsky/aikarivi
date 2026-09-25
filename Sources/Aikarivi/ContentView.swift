@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
-import TimedNotesCore
-import TimedNotesEditor
+import AikariviCore
+import AikariviEditor
 import UniformTypeIdentifiers
 
 struct ContentView: View {

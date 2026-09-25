@@ -3,39 +3,39 @@
 import PackageDescription
 
 let package = Package(
-    name: "TimedNotes",
+    name: "Aikarivi",
     platforms: [
         .macOS(.v13)
     ],
     products: [
-        .executable(name: "Tickline", targets: ["TimedNotes"])
+        .executable(name: "Aikarivi", targets: ["Aikarivi"])
     ],
     targets: [
         // Timer, stamps and their bookkeeping. No UI, fully testable.
         .target(
-            name: "TimedNotesCore",
-            path: "Sources/TimedNotesCore"
+            name: "AikariviCore",
+            path: "Sources/AikariviCore"
         ),
         // The AppKit text editor with the timestamp gutter.
         .target(
-            name: "TimedNotesEditor",
-            dependencies: ["TimedNotesCore"],
-            path: "Sources/TimedNotesEditor"
+            name: "AikariviEditor",
+            dependencies: ["AikariviCore"],
+            path: "Sources/AikariviEditor"
         ),
         .executableTarget(
-            name: "TimedNotes",
-            dependencies: ["TimedNotesCore", "TimedNotesEditor"],
-            path: "Sources/TimedNotes"
+            name: "Aikarivi",
+            dependencies: ["AikariviCore", "AikariviEditor"],
+            path: "Sources/Aikarivi"
         ),
         .testTarget(
-            name: "TimedNotesCoreTests",
-            dependencies: ["TimedNotesCore"],
-            path: "Tests/TimedNotesCoreTests"
+            name: "AikariviCoreTests",
+            dependencies: ["AikariviCore"],
+            path: "Tests/AikariviCoreTests"
         ),
         .testTarget(
-            name: "TimedNotesEditorTests",
-            dependencies: ["TimedNotesEditor"],
-            path: "Tests/TimedNotesEditorTests"
+            name: "AikariviEditorTests",
+            dependencies: ["AikariviEditor"],
+            path: "Tests/AikariviEditorTests"
         )
     ]
 )

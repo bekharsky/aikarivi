@@ -1,5 +1,5 @@
 import AppKit
-import TimedNotesCore
+import AikariviCore
 
 /// Text view that separates the two kinds of line break.
 ///

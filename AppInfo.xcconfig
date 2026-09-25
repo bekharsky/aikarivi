@@ -1,8 +1,9 @@
-PRODUCT_NAME = Tickline
-APP_DISPLAY_NAME = Tickline
+PRODUCT_NAME = Aikarivi
+APP_DISPLAY_NAME = Aikarivi
 
 // Public application identity. Bundle identifiers and Team IDs are metadata,
 // not credentials; private signing material stays in Xcode/Apple services.
+// Keep the existing App Store and sandbox identity across the product rename.
 APP_PRODUCT_BUNDLE_IDENTIFIER = com.kharion.tickline
 APP_PRODUCT_COPYRIGHT = Copyright © 2026 Kharion. All rights reserved.
 

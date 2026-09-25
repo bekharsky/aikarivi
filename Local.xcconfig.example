@@ -1,6 +1,7 @@
 // Copy to Local.xcconfig to build with your own identifier and signing.
 // Local.xcconfig is gitignored and wins over AppInfo.xcconfig.
 
+// Preserve the production app identity when building an update.
 APP_PRODUCT_BUNDLE_IDENTIFIER = com.kharion.tickline
 APP_PRODUCT_COPYRIGHT = Copyright © 2026 Ilia Bekharsky. All rights reserved.
 

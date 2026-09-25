@@ -1,13 +1,14 @@
 import AppKit
 import Combine
 import SwiftUI
-import TimedNotesCore
-import TimedNotesEditor
+import AikariviCore
+import AikariviEditor
 import UniformTypeIdentifiers
 
 extension UTType {
     /// Older notes used a private `.timednote` extension. The bytes are still
     /// Markdown; this type only exists so Finder can hand those files back.
+    // This identifier belongs to existing files and survives product renames.
     static let legacyTimedNote = UTType(importedAs: "com.kharion.tickline.legacy-note")
 }
 
@@ -107,7 +108,7 @@ final class TimedNoteDocument: ReferenceFileDocument {
     @MainActor
     func exportToFile() {
         let panel = NSSavePanel()
-        panel.nameFieldStringValue = "tickline.txt"
+        panel.nameFieldStringValue = "aikarivi.txt"
         panel.canCreateDirectories = true
         guard panel.runModal() == .OK, let url = panel.url else { return }
         try? editor.stampedText(selectionOnly: false).write(to: url, atomically: true, encoding: .utf8)

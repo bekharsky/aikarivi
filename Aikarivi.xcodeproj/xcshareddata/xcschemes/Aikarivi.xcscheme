@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "7D28D188FDC460345E05155F"
-               BuildableName = "Tickline.app"
-               BlueprintName = "Tickline"
-               ReferencedContainer = "container:Tickline.xcodeproj">
+               BuildableName = "Aikarivi.app"
+               BlueprintName = "Aikarivi"
+               ReferencedContainer = "container:Aikarivi.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -29,9 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F0B9A6A47512218ECEC9F2ED"
-               BuildableName = "TimedNotesCoreTests.xctest"
-               BlueprintName = "TimedNotesCoreTests"
-               ReferencedContainer = "container:Tickline.xcodeproj">
+               BuildableName = "AikariviCoreTests.xctest"
+               BlueprintName = "AikariviCoreTests"
+               ReferencedContainer = "container:Aikarivi.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7D28D188FDC460345E05155F"
-            BuildableName = "Tickline.app"
-            BlueprintName = "Tickline"
-            ReferencedContainer = "container:Tickline.xcodeproj">
+            BuildableName = "Aikarivi.app"
+            BlueprintName = "Aikarivi"
+            ReferencedContainer = "container:Aikarivi.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -56,9 +56,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F0B9A6A47512218ECEC9F2ED"
-               BuildableName = "TimedNotesCoreTests.xctest"
-               BlueprintName = "TimedNotesCoreTests"
-               ReferencedContainer = "container:Tickline.xcodeproj">
+               BuildableName = "AikariviCoreTests.xctest"
+               BlueprintName = "AikariviCoreTests"
+               ReferencedContainer = "container:Aikarivi.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -66,9 +66,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "053D8BB8C398643538D1737A"
-               BuildableName = "TimedNotesEditorTests.xctest"
-               BlueprintName = "TimedNotesEditorTests"
-               ReferencedContainer = "container:Tickline.xcodeproj">
+               BuildableName = "AikariviEditorTests.xctest"
+               BlueprintName = "AikariviEditorTests"
+               ReferencedContainer = "container:Aikarivi.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -88,9 +88,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7D28D188FDC460345E05155F"
-            BuildableName = "Tickline.app"
-            BlueprintName = "Tickline"
-            ReferencedContainer = "container:Tickline.xcodeproj">
+            BuildableName = "Aikarivi.app"
+            BlueprintName = "Aikarivi"
+            ReferencedContainer = "container:Aikarivi.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -105,9 +105,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7D28D188FDC460345E05155F"
-            BuildableName = "Tickline.app"
-            BlueprintName = "Tickline"
-            ReferencedContainer = "container:Tickline.xcodeproj">
+            BuildableName = "Aikarivi.app"
+            BlueprintName = "Aikarivi"
+            ReferencedContainer = "container:Aikarivi.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -12,32 +12,32 @@
 		3A50A9B5A8B4BA78D2BEB3A3 /* LineStamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7DB63ACD4AF70239027B743 /* LineStamp.swift */; };
 		3C4F22F8F00E55BFE6017036 /* NoteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2577322F72DFF40FECA0AF8 /* NoteEditorView.swift */; };
 		3DFADB5D94BFF5D7F8E0A44D /* TypingDiagnosticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD3AEF7F7A327A89AA1B6ADD /* TypingDiagnosticsTests.swift */; };
-		43159E0FE888C7E3BED5AA47 /* TimedNotesEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C632305CEC5E1E3ECF7A3330 /* TimedNotesEditor.framework */; };
-		48030858AED34F1FAA61BD93 /* TimedNotesCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3B6F46AF8B7FD778286BE01 /* TimedNotesCore.framework */; };
-		4CF1E08181474C527875ED5A /* TimedNotesCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3B6F46AF8B7FD778286BE01 /* TimedNotesCore.framework */; };
-		5422F91207B4FE2950BE7FB3 /* TimedNotesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1847953BE681401FA6BBE7 /* TimedNotesApp.swift */; };
+		43159E0FE888C7E3BED5AA47 /* AikariviEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C632305CEC5E1E3ECF7A3330 /* AikariviEditor.framework */; };
+		48030858AED34F1FAA61BD93 /* AikariviCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3B6F46AF8B7FD778286BE01 /* AikariviCore.framework */; };
+		4CF1E08181474C527875ED5A /* AikariviCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3B6F46AF8B7FD778286BE01 /* AikariviCore.framework */; };
+		5422F91207B4FE2950BE7FB3 /* AikariviApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1847953BE681401FA6BBE7 /* AikariviApp.swift */; };
 		562DDE1C1B158C41A1C5D5B7 /* NoteSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BCA0269A9AFE3544A4E5E13 /* NoteSnapshot.swift */; };
 		56C74EFD22B5911C24AE7365 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD796AC8B95827F8FF09D29 /* Cocoa.framework */; };
 		60933F91858CB75141222EFF /* GutterRenderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07087442AEA01EE67ADCD246 /* GutterRenderTests.swift */; };
 		61DE80EA43A1A82F98822A89 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD796AC8B95827F8FF09D29 /* Cocoa.framework */; };
 		67F5E3D6F7C6FCAE0697F921 /* LineStampTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1DFC0BF2C0917EF48AA9B2 /* LineStampTable.swift */; };
 		68D14760AD040342A09235C1 /* TimedNoteDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A54E16638ABE61FC48F4D43E /* TimedNoteDocument.swift */; };
-		72A60768696D40C433824365 /* TimedNotesEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C632305CEC5E1E3ECF7A3330 /* TimedNotesEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		72A60768696D40C433824365 /* AikariviEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C632305CEC5E1E3ECF7A3330 /* AikariviEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		74C615A8ED8CCE1478427281 /* StampFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D065965897718EEE4DFF518C /* StampFormatterTests.swift */; };
-		77E302A47C7CF4819B553690 /* TimedNotesCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D3B6F46AF8B7FD778286BE01 /* TimedNotesCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		77E302A47C7CF4819B553690 /* AikariviCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D3B6F46AF8B7FD778286BE01 /* AikariviCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		792011163C0075AD8AE3585A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0D553DDA587CA3F3C32493 /* ContentView.swift */; };
 		84068082678CF488C51C1A23 /* NoteEditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29BA379E11527ABE47738E05 /* NoteEditorController.swift */; };
 		8627602324A5E4ED8D8ADBCD /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD796AC8B95827F8FF09D29 /* Cocoa.framework */; };
 		910CF102D4553BF8287A73BF /* StampGutterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFA26429CE3FCF1B7F25DCB /* StampGutterView.swift */; };
 		9CF1FA12FDC5439C5D27980F /* MarkdownNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A4848B4EE2BA3E4E9A0ED94 /* MarkdownNote.swift */; };
 		9DAB754BD2148895A4F9C1B6 /* TimerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD96AFE89C6862D9E9A61AA /* TimerEngine.swift */; };
-		A1A630D08E02985BAE44778D /* TimedNotesEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C632305CEC5E1E3ECF7A3330 /* TimedNotesEditor.framework */; };
+		A1A630D08E02985BAE44778D /* AikariviEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C632305CEC5E1E3ECF7A3330 /* AikariviEditor.framework */; };
 		B9B6592D26FA6F1BEF0E296D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD796AC8B95827F8FF09D29 /* Cocoa.framework */; };
 		BA298A763CE6EFC3CD871C63 /* ParagraphIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 995A78B6F118C0248DD9CFF1 /* ParagraphIndex.swift */; };
 		C074EA705A4795C457E5A6D3 /* LineStampTableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87DFB088427FA1948AEC9BB6 /* LineStampTableTests.swift */; };
 		C88591C3946C51383F1DF351 /* StampBookkeeperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10050B740DAC981BB0E8DCA /* StampBookkeeperTests.swift */; };
-		D9E76A516FC3B8804A014E46 /* TimedNotesCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3B6F46AF8B7FD778286BE01 /* TimedNotesCore.framework */; };
-		DACC0FDD0D8F9A12D4AC6C08 /* TimedNotesCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3B6F46AF8B7FD778286BE01 /* TimedNotesCore.framework */; };
+		D9E76A516FC3B8804A014E46 /* AikariviCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3B6F46AF8B7FD778286BE01 /* AikariviCore.framework */; };
+		DACC0FDD0D8F9A12D4AC6C08 /* AikariviCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3B6F46AF8B7FD778286BE01 /* AikariviCore.framework */; };
 		E51E7C99FC3BCB0B146372DE /* TimedTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D96F3BA00C28777041771BD /* TimedTextView.swift */; };
 		E90FE120D42BAA951488AAD1 /* LegacySessionRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACFF7FBD4E426C1BD555B1D /* LegacySessionRecovery.swift */; };
 		ED11545D07A5AFB4F8F02787 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD796AC8B95827F8FF09D29 /* Cocoa.framework */; };
@@ -51,42 +51,42 @@
 			containerPortal = 8EB9B89F800207DF7D1B2E99 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = E63E0D6223D48267EEADA2B0;
-			remoteInfo = TimedNotesEditor;
+			remoteInfo = AikariviEditor;
 		};
 		4006F96BF2C5D7FF2A4E8B02 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8EB9B89F800207DF7D1B2E99 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 292D5C2EAA41F4D71678C951;
-			remoteInfo = TimedNotesCore;
+			remoteInfo = AikariviCore;
 		};
 		5BF6719E9001B752746398FB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8EB9B89F800207DF7D1B2E99 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 292D5C2EAA41F4D71678C951;
-			remoteInfo = TimedNotesCore;
+			remoteInfo = AikariviCore;
 		};
 		8996E1B5A43A7FE61D546A32 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8EB9B89F800207DF7D1B2E99 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 292D5C2EAA41F4D71678C951;
-			remoteInfo = TimedNotesCore;
+			remoteInfo = AikariviCore;
 		};
 		C5E5EF9D4827F246185EC333 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8EB9B89F800207DF7D1B2E99 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 292D5C2EAA41F4D71678C951;
-			remoteInfo = TimedNotesCore;
+			remoteInfo = AikariviCore;
 		};
 		F0D006A6736611D38EF45C11 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8EB9B89F800207DF7D1B2E99 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = E63E0D6223D48267EEADA2B0;
-			remoteInfo = TimedNotesEditor;
+			remoteInfo = AikariviEditor;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -97,8 +97,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				77E302A47C7CF4819B553690 /* TimedNotesCore.framework in Embed Frameworks */,
-				72A60768696D40C433824365 /* TimedNotesEditor.framework in Embed Frameworks */,
+				77E302A47C7CF4819B553690 /* AikariviCore.framework in Embed Frameworks */,
+				72A60768696D40C433824365 /* AikariviEditor.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -106,9 +106,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0343E0714ADED57DB1289B0D /* Tickline.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tickline.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0343E0714ADED57DB1289B0D /* Aikarivi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aikarivi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		07087442AEA01EE67ADCD246 /* GutterRenderTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GutterRenderTests.swift; sourceTree = "<group>"; };
-		0A1847953BE681401FA6BBE7 /* TimedNotesApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimedNotesApp.swift; sourceTree = "<group>"; };
+		0A1847953BE681401FA6BBE7 /* AikariviApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AikariviApp.swift; sourceTree = "<group>"; };
 		0CD796AC8B95827F8FF09D29 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		1A0D553DDA587CA3F3C32493 /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1F7BF36178C22C093362213E /* DebugProfile.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = DebugProfile.entitlements; sourceTree = "<group>"; };
@@ -116,7 +116,7 @@
 		43BB1548B934EA4443EC3166 /* MarkdownNoteTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarkdownNoteTests.swift; sourceTree = "<group>"; };
 		6A4848B4EE2BA3E4E9A0ED94 /* MarkdownNote.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarkdownNote.swift; sourceTree = "<group>"; };
 		7D96F3BA00C28777041771BD /* TimedTextView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimedTextView.swift; sourceTree = "<group>"; };
-		83AA7AD6201486C9BF38A49C /* TimedNotesCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TimedNotesCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		83AA7AD6201486C9BF38A49C /* AikariviCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AikariviCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		87DFB088427FA1948AEC9BB6 /* LineStampTableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LineStampTableTests.swift; sourceTree = "<group>"; };
 		8FD96AFE89C6862D9E9A61AA /* TimerEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimerEngine.swift; sourceTree = "<group>"; };
 		995A78B6F118C0248DD9CFF1 /* ParagraphIndex.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParagraphIndex.swift; sourceTree = "<group>"; };
@@ -128,14 +128,14 @@
 		B1F1981D0D65F7E5B31887B2 /* StampBookkeeper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StampBookkeeper.swift; sourceTree = "<group>"; };
 		B67933EA0F58C11CF660BC60 /* StampFormat.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StampFormat.swift; sourceTree = "<group>"; };
 		BACFF7FBD4E426C1BD555B1D /* LegacySessionRecovery.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegacySessionRecovery.swift; sourceTree = "<group>"; };
-		BBA5DFAE2CCD847F16EDA351 /* TimedNotesEditorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TimedNotesEditorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBA5DFAE2CCD847F16EDA351 /* AikariviEditorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AikariviEditorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C10050B740DAC981BB0E8DCA /* StampBookkeeperTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StampBookkeeperTests.swift; sourceTree = "<group>"; };
 		C2577322F72DFF40FECA0AF8 /* NoteEditorView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NoteEditorView.swift; sourceTree = "<group>"; };
-		C632305CEC5E1E3ECF7A3330 /* TimedNotesEditor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TimedNotesEditor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C632305CEC5E1E3ECF7A3330 /* AikariviEditor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AikariviEditor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD3AEF7F7A327A89AA1B6ADD /* TypingDiagnosticsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TypingDiagnosticsTests.swift; sourceTree = "<group>"; };
 		CF463FC10558633DCAA05308 /* Release.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = Release.entitlements; sourceTree = "<group>"; };
 		D065965897718EEE4DFF518C /* StampFormatterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StampFormatterTests.swift; sourceTree = "<group>"; };
-		D3B6F46AF8B7FD778286BE01 /* TimedNotesCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TimedNotesCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D3B6F46AF8B7FD778286BE01 /* AikariviCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AikariviCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6C09E9F613D9819EB17EF55 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E7DB63ACD4AF70239027B743 /* LineStamp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LineStamp.swift; sourceTree = "<group>"; };
 		EB1DFC0BF2C0917EF48AA9B2 /* LineStampTable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LineStampTable.swift; sourceTree = "<group>"; };
@@ -155,7 +155,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				56C74EFD22B5911C24AE7365 /* Cocoa.framework in Frameworks */,
-				DACC0FDD0D8F9A12D4AC6C08 /* TimedNotesCore.framework in Frameworks */,
+				DACC0FDD0D8F9A12D4AC6C08 /* AikariviCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -164,8 +164,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8627602324A5E4ED8D8ADBCD /* Cocoa.framework in Frameworks */,
-				4CF1E08181474C527875ED5A /* TimedNotesCore.framework in Frameworks */,
-				A1A630D08E02985BAE44778D /* TimedNotesEditor.framework in Frameworks */,
+				4CF1E08181474C527875ED5A /* AikariviCore.framework in Frameworks */,
+				A1A630D08E02985BAE44778D /* AikariviEditor.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,8 +174,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				61DE80EA43A1A82F98822A89 /* Cocoa.framework in Frameworks */,
-				D9E76A516FC3B8804A014E46 /* TimedNotesCore.framework in Frameworks */,
-				43159E0FE888C7E3BED5AA47 /* TimedNotesEditor.framework in Frameworks */,
+				D9E76A516FC3B8804A014E46 /* AikariviCore.framework in Frameworks */,
+				43159E0FE888C7E3BED5AA47 /* AikariviEditor.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -184,7 +184,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED11545D07A5AFB4F8F02787 /* Cocoa.framework in Frameworks */,
-				48030858AED34F1FAA61BD93 /* TimedNotesCore.framework in Frameworks */,
+				48030858AED34F1FAA61BD93 /* AikariviCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,7 +202,7 @@
 			path = Packaging;
 			sourceTree = "<group>";
 		};
-		13E8D3DEE13B8D7CDCCA8C85 /* TimedNotesCore */ = {
+		13E8D3DEE13B8D7CDCCA8C85 /* AikariviCore */ = {
 			isa = PBXGroup;
 			children = (
 				E7DB63ACD4AF70239027B743 /* LineStamp.swift */,
@@ -214,11 +214,11 @@
 				B67933EA0F58C11CF660BC60 /* StampFormat.swift */,
 				8FD96AFE89C6862D9E9A61AA /* TimerEngine.swift */,
 			);
-			name = TimedNotesCore;
-			path = TimedNotesCore;
+			name = AikariviCore;
+			path = AikariviCore;
 			sourceTree = "<group>";
 		};
-		15B1267B28569E35B928A8CF /* TimedNotesEditor */ = {
+		15B1267B28569E35B928A8CF /* AikariviEditor */ = {
 			isa = PBXGroup;
 			children = (
 				29BA379E11527ABE47738E05 /* NoteEditorController.swift */,
@@ -226,29 +226,29 @@
 				ABFA26429CE3FCF1B7F25DCB /* StampGutterView.swift */,
 				7D96F3BA00C28777041771BD /* TimedTextView.swift */,
 			);
-			name = TimedNotesEditor;
-			path = TimedNotesEditor;
+			name = AikariviEditor;
+			path = AikariviEditor;
 			sourceTree = "<group>";
 		};
 		3CF329125CEEC4126ADCB8C2 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				13E8D3DEE13B8D7CDCCA8C85 /* TimedNotesCore */,
-				15B1267B28569E35B928A8CF /* TimedNotesEditor */,
-				8D8DA90B5232B74964E9959E /* TimedNotes */,
+				13E8D3DEE13B8D7CDCCA8C85 /* AikariviCore */,
+				15B1267B28569E35B928A8CF /* AikariviEditor */,
+				8D8DA90B5232B74964E9959E /* Aikarivi */,
 			);
 			name = Sources;
 			path = Sources;
 			sourceTree = "<group>";
 		};
-		4A05D463DE4A0177CE33529F /* TimedNotesEditorTests */ = {
+		4A05D463DE4A0177CE33529F /* AikariviEditorTests */ = {
 			isa = PBXGroup;
 			children = (
 				07087442AEA01EE67ADCD246 /* GutterRenderTests.swift */,
 				CD3AEF7F7A327A89AA1B6ADD /* TypingDiagnosticsTests.swift */,
 			);
-			name = TimedNotesEditorTests;
-			path = TimedNotesEditorTests;
+			name = AikariviEditorTests;
+			path = AikariviEditorTests;
 			sourceTree = "<group>";
 		};
 		6CC9DC2BC25BE450A0B50E18 /* Frameworks */ = {
@@ -262,28 +262,28 @@
 		8B86DA2BA3545DC345538DCE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D3B6F46AF8B7FD778286BE01 /* TimedNotesCore.framework */,
-				C632305CEC5E1E3ECF7A3330 /* TimedNotesEditor.framework */,
-				0343E0714ADED57DB1289B0D /* Tickline.app */,
-				83AA7AD6201486C9BF38A49C /* TimedNotesCoreTests.xctest */,
-				BBA5DFAE2CCD847F16EDA351 /* TimedNotesEditorTests.xctest */,
+				D3B6F46AF8B7FD778286BE01 /* AikariviCore.framework */,
+				C632305CEC5E1E3ECF7A3330 /* AikariviEditor.framework */,
+				0343E0714ADED57DB1289B0D /* Aikarivi.app */,
+				83AA7AD6201486C9BF38A49C /* AikariviCoreTests.xctest */,
+				BBA5DFAE2CCD847F16EDA351 /* AikariviEditorTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8D8DA90B5232B74964E9959E /* TimedNotes */ = {
+		8D8DA90B5232B74964E9959E /* Aikarivi */ = {
 			isa = PBXGroup;
 			children = (
 				1A0D553DDA587CA3F3C32493 /* ContentView.swift */,
 				BACFF7FBD4E426C1BD555B1D /* LegacySessionRecovery.swift */,
 				A54E16638ABE61FC48F4D43E /* TimedNoteDocument.swift */,
-				0A1847953BE681401FA6BBE7 /* TimedNotesApp.swift */,
+				0A1847953BE681401FA6BBE7 /* AikariviApp.swift */,
 			);
-			name = TimedNotes;
-			path = TimedNotes;
+			name = Aikarivi;
+			path = Aikarivi;
 			sourceTree = "<group>";
 		};
-		B87F9FABE9EE59A7BC9E5301 /* TimedNotesCoreTests */ = {
+		B87F9FABE9EE59A7BC9E5301 /* AikariviCoreTests */ = {
 			isa = PBXGroup;
 			children = (
 				87DFB088427FA1948AEC9BB6 /* LineStampTableTests.swift */,
@@ -291,15 +291,15 @@
 				C10050B740DAC981BB0E8DCA /* StampBookkeeperTests.swift */,
 				D065965897718EEE4DFF518C /* StampFormatterTests.swift */,
 			);
-			name = TimedNotesCoreTests;
-			path = TimedNotesCoreTests;
+			name = AikariviCoreTests;
+			path = AikariviCoreTests;
 			sourceTree = "<group>";
 		};
 		BF9E133239C525BDBD75C9A2 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				B87F9FABE9EE59A7BC9E5301 /* TimedNotesCoreTests */,
-				4A05D463DE4A0177CE33529F /* TimedNotesEditorTests */,
+				B87F9FABE9EE59A7BC9E5301 /* AikariviCoreTests */,
+				4A05D463DE4A0177CE33529F /* AikariviEditorTests */,
 			);
 			name = Tests;
 			path = Tests;
@@ -346,9 +346,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		053D8BB8C398643538D1737A /* TimedNotesEditorTests */ = {
+		053D8BB8C398643538D1737A /* AikariviEditorTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4F74074CD754E14ABDECB891 /* Build configuration list for PBXNativeTarget "TimedNotesEditorTests" */;
+			buildConfigurationList = 4F74074CD754E14ABDECB891 /* Build configuration list for PBXNativeTarget "AikariviEditorTests" */;
 			buildPhases = (
 				A88AC9743D6924A402C31C9C /* Sources */,
 				6630D745C54E47025D6649EE /* Frameworks */,
@@ -360,14 +360,14 @@
 				BE7CC5A351D53F64C5DCAD87 /* PBXTargetDependency */,
 				EB4A159A2D844CEC6E570F46 /* PBXTargetDependency */,
 			);
-			name = TimedNotesEditorTests;
-			productName = TimedNotesEditorTests;
-			productReference = BBA5DFAE2CCD847F16EDA351 /* TimedNotesEditorTests.xctest */;
+			name = AikariviEditorTests;
+			productName = AikariviEditorTests;
+			productReference = BBA5DFAE2CCD847F16EDA351 /* AikariviEditorTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		292D5C2EAA41F4D71678C951 /* TimedNotesCore */ = {
+		292D5C2EAA41F4D71678C951 /* AikariviCore */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B328867644C4195FB41A458E /* Build configuration list for PBXNativeTarget "TimedNotesCore" */;
+			buildConfigurationList = B328867644C4195FB41A458E /* Build configuration list for PBXNativeTarget "AikariviCore" */;
 			buildPhases = (
 				EA0699223E543B299661AA21 /* Headers */,
 				5B92A0515ED5248822F6FD14 /* Sources */,
@@ -378,14 +378,14 @@
 			);
 			dependencies = (
 			);
-			name = TimedNotesCore;
-			productName = TimedNotesCore;
-			productReference = D3B6F46AF8B7FD778286BE01 /* TimedNotesCore.framework */;
+			name = AikariviCore;
+			productName = AikariviCore;
+			productReference = D3B6F46AF8B7FD778286BE01 /* AikariviCore.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		7D28D188FDC460345E05155F /* Tickline */ = {
+		7D28D188FDC460345E05155F /* Aikarivi */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4E20AA199ED76ADC96EC6E14 /* Build configuration list for PBXNativeTarget "Tickline" */;
+			buildConfigurationList = 4E20AA199ED76ADC96EC6E14 /* Build configuration list for PBXNativeTarget "Aikarivi" */;
 			buildPhases = (
 				AD8A5CE09BC8AF7AA9E51838 /* Sources */,
 				750A576A277D4651CAC0DB4B /* Frameworks */,
@@ -398,14 +398,14 @@
 				7E14225976C09EE8F8199844 /* PBXTargetDependency */,
 				2F432BEC29FEC2DC0136B523 /* PBXTargetDependency */,
 			);
-			name = Tickline;
-			productName = Tickline;
-			productReference = 0343E0714ADED57DB1289B0D /* Tickline.app */;
+			name = Aikarivi;
+			productName = Aikarivi;
+			productReference = 0343E0714ADED57DB1289B0D /* Aikarivi.app */;
 			productType = "com.apple.product-type.application";
 		};
-		E63E0D6223D48267EEADA2B0 /* TimedNotesEditor */ = {
+		E63E0D6223D48267EEADA2B0 /* AikariviEditor */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 915407851CD9F5C9E809FF64 /* Build configuration list for PBXNativeTarget "TimedNotesEditor" */;
+			buildConfigurationList = 915407851CD9F5C9E809FF64 /* Build configuration list for PBXNativeTarget "AikariviEditor" */;
 			buildPhases = (
 				4EECE3FCA10696E53942EFF5 /* Headers */,
 				CA8AED37FA9B59D32B6E0034 /* Sources */,
@@ -417,14 +417,14 @@
 			dependencies = (
 				4D923EF43012A84099390962 /* PBXTargetDependency */,
 			);
-			name = TimedNotesEditor;
-			productName = TimedNotesEditor;
-			productReference = C632305CEC5E1E3ECF7A3330 /* TimedNotesEditor.framework */;
+			name = AikariviEditor;
+			productName = AikariviEditor;
+			productReference = C632305CEC5E1E3ECF7A3330 /* AikariviEditor.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		F0B9A6A47512218ECEC9F2ED /* TimedNotesCoreTests */ = {
+		F0B9A6A47512218ECEC9F2ED /* AikariviCoreTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 68EFADDA74A7B81643FC6D57 /* Build configuration list for PBXNativeTarget "TimedNotesCoreTests" */;
+			buildConfigurationList = 68EFADDA74A7B81643FC6D57 /* Build configuration list for PBXNativeTarget "AikariviCoreTests" */;
 			buildPhases = (
 				BB07A84BE9DF53F026F3CB26 /* Sources */,
 				FE70DF11D161D22D4E146151 /* Frameworks */,
@@ -435,9 +435,9 @@
 			dependencies = (
 				29CA12B87EF4D0B5CEC5F5E6 /* PBXTargetDependency */,
 			);
-			name = TimedNotesCoreTests;
-			productName = TimedNotesCoreTests;
-			productReference = 83AA7AD6201486C9BF38A49C /* TimedNotesCoreTests.xctest */;
+			name = AikariviCoreTests;
+			productName = AikariviCoreTests;
+			productReference = 83AA7AD6201486C9BF38A49C /* AikariviCoreTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -449,7 +449,7 @@
 				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2630;
 			};
-			buildConfigurationList = E5DC6EB3DD22FFEAA31CA522 /* Build configuration list for PBXProject "Tickline" */;
+			buildConfigurationList = E5DC6EB3DD22FFEAA31CA522 /* Build configuration list for PBXProject "Aikarivi" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -464,11 +464,11 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				292D5C2EAA41F4D71678C951 /* TimedNotesCore */,
-				E63E0D6223D48267EEADA2B0 /* TimedNotesEditor */,
-				7D28D188FDC460345E05155F /* Tickline */,
-				F0B9A6A47512218ECEC9F2ED /* TimedNotesCoreTests */,
-				053D8BB8C398643538D1737A /* TimedNotesEditorTests */,
+				292D5C2EAA41F4D71678C951 /* AikariviCore */,
+				E63E0D6223D48267EEADA2B0 /* AikariviEditor */,
+				7D28D188FDC460345E05155F /* Aikarivi */,
+				F0B9A6A47512218ECEC9F2ED /* AikariviCoreTests */,
+				053D8BB8C398643538D1737A /* AikariviEditorTests */,
 			);
 		};
 /* End PBXProject section */
@@ -544,7 +544,7 @@
 				792011163C0075AD8AE3585A /* ContentView.swift in Sources */,
 				E90FE120D42BAA951488AAD1 /* LegacySessionRecovery.swift in Sources */,
 				68D14760AD040342A09235C1 /* TimedNoteDocument.swift in Sources */,
-				5422F91207B4FE2950BE7FB3 /* TimedNotesApp.swift in Sources */,
+				5422F91207B4FE2950BE7FB3 /* AikariviApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -575,38 +575,38 @@
 /* Begin PBXTargetDependency section */
 		29CA12B87EF4D0B5CEC5F5E6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = TimedNotesCore;
-			target = 292D5C2EAA41F4D71678C951 /* TimedNotesCore */;
+			name = AikariviCore;
+			target = 292D5C2EAA41F4D71678C951 /* AikariviCore */;
 			targetProxy = 5BF6719E9001B752746398FB /* PBXContainerItemProxy */;
 		};
 		2F432BEC29FEC2DC0136B523 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = TimedNotesEditor;
-			target = E63E0D6223D48267EEADA2B0 /* TimedNotesEditor */;
+			name = AikariviEditor;
+			target = E63E0D6223D48267EEADA2B0 /* AikariviEditor */;
 			targetProxy = 26DCC1A0B111836EA31FE72F /* PBXContainerItemProxy */;
 		};
 		4D923EF43012A84099390962 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = TimedNotesCore;
-			target = 292D5C2EAA41F4D71678C951 /* TimedNotesCore */;
+			name = AikariviCore;
+			target = 292D5C2EAA41F4D71678C951 /* AikariviCore */;
 			targetProxy = 8996E1B5A43A7FE61D546A32 /* PBXContainerItemProxy */;
 		};
 		7E14225976C09EE8F8199844 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = TimedNotesCore;
-			target = 292D5C2EAA41F4D71678C951 /* TimedNotesCore */;
+			name = AikariviCore;
+			target = 292D5C2EAA41F4D71678C951 /* AikariviCore */;
 			targetProxy = C5E5EF9D4827F246185EC333 /* PBXContainerItemProxy */;
 		};
 		BE7CC5A351D53F64C5DCAD87 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = TimedNotesCore;
-			target = 292D5C2EAA41F4D71678C951 /* TimedNotesCore */;
+			name = AikariviCore;
+			target = 292D5C2EAA41F4D71678C951 /* AikariviCore */;
 			targetProxy = 4006F96BF2C5D7FF2A4E8B02 /* PBXContainerItemProxy */;
 		};
 		EB4A159A2D844CEC6E570F46 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = TimedNotesEditor;
-			target = E63E0D6223D48267EEADA2B0 /* TimedNotesEditor */;
+			name = AikariviEditor;
+			target = E63E0D6223D48267EEADA2B0 /* AikariviEditor */;
 			targetProxy = F0D006A6736611D38EF45C11 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -619,7 +619,7 @@
 				DEVELOPMENT_TEAM = DSP3NSS4L8;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.tickline.TimedNotesEditorTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.aikarivi.AikariviEditorTests;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 			};
@@ -641,7 +641,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.tickline.editor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.aikarivi.editor;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -658,7 +658,7 @@
 				DEVELOPMENT_TEAM = DSP3NSS4L8;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.tickline.TimedNotesCoreTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.aikarivi.AikariviCoreTests;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 			};
@@ -814,7 +814,7 @@
 				DEVELOPMENT_TEAM = DSP3NSS4L8;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.tickline.TimedNotesCoreTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.aikarivi.AikariviCoreTests;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 			};
@@ -836,7 +836,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.tickline.core;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.aikarivi.core;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -853,7 +853,7 @@
 				DEVELOPMENT_TEAM = DSP3NSS4L8;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.tickline.TimedNotesEditorTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.aikarivi.AikariviEditorTests;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 			};
@@ -897,7 +897,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.tickline.editor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.aikarivi.editor;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -923,7 +923,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.tickline.core;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kharion.aikarivi.core;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -936,7 +936,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4E20AA199ED76ADC96EC6E14 /* Build configuration list for PBXNativeTarget "Tickline" */ = {
+		4E20AA199ED76ADC96EC6E14 /* Build configuration list for PBXNativeTarget "Aikarivi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E303897D191851BCDBD0D8E6 /* Release */,
@@ -945,7 +945,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4F74074CD754E14ABDECB891 /* Build configuration list for PBXNativeTarget "TimedNotesEditorTests" */ = {
+		4F74074CD754E14ABDECB891 /* Build configuration list for PBXNativeTarget "AikariviEditorTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E2C1406239143F81A81E3C11 /* Release */,
@@ -954,7 +954,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		68EFADDA74A7B81643FC6D57 /* Build configuration list for PBXNativeTarget "TimedNotesCoreTests" */ = {
+		68EFADDA74A7B81643FC6D57 /* Build configuration list for PBXNativeTarget "AikariviCoreTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5309223185DBE6CB38CF5DFC /* Release */,
@@ -963,7 +963,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		915407851CD9F5C9E809FF64 /* Build configuration list for PBXNativeTarget "TimedNotesEditor" */ = {
+		915407851CD9F5C9E809FF64 /* Build configuration list for PBXNativeTarget "AikariviEditor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				49D80DAE4CD18B1BF145C665 /* Release */,
@@ -972,7 +972,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B328867644C4195FB41A458E /* Build configuration list for PBXNativeTarget "TimedNotesCore" */ = {
+		B328867644C4195FB41A458E /* Build configuration list for PBXNativeTarget "AikariviCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D7D693093918D82B0F431481 /* Release */,
@@ -981,7 +981,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E5DC6EB3DD22FFEAA31CA522 /* Build configuration list for PBXProject "Tickline" */ = {
+		E5DC6EB3DD22FFEAA31CA522 /* Build configuration list for PBXProject "Aikarivi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A68DA62A0462D5E3AA29BDAE /* Debug */,
