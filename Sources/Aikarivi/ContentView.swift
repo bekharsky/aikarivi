@@ -279,7 +279,7 @@ private struct CopyStampsButton: View {
         if let stamp = editor.caretStamp {
             sample = StampFormatter.string(for: stamp, format: editor.format)
         } else {
-            sample = StampFormatter.placeholder(for: editor.format)
+            return "Copy timestamps where present; unstamped text stays plain (⇧⌘C)"
         }
         return "Copy the selection with timestamps as shown, like [\(sample)] (⇧⌘C)"
     }

@@ -106,12 +106,13 @@ final class GutterRenderTests: XCTestCase {
         XCTAssertEqual(controller.stampText(forLine: 1), "00:53:32.4")
     }
 
-    func testLinesWithoutStampsShowAPlaceholder() {
+    func testUnstampedLinesShowNoGutterLabel() {
         let controller = makeController(
             lines: [NoteSnapshot.Line(text: "written before the timer", stamp: nil)],
             format: .clock
         )
-        XCTAssertEqual(controller.stampText(forLine: 0), "--:--:--")
+        XCTAssertEqual(controller.stampText(forLine: 0), "")
+        XCTAssertEqual(controller.gutter.preferredWidth, 0)
     }
 
     /// The bug that made the app unusable: the gutter drew, the text did not.

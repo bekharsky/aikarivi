@@ -40,10 +40,13 @@ final class MarkdownNoteTests: XCTestCase {
             ---
 
             [00:59:56.246] first thought
-            [--:--:--.---] written before the start
+            written before the start
 
             """
         )
+
+        let restored = MarkdownNote.snapshot(from: text)
+        XCTAssertNil(restored.lines[1].stamp)
     }
 
     func testRoundTripKeepsMillisecondPrecision() {
@@ -118,6 +121,21 @@ final class MarkdownNoteTests: XCTestCase {
         let restored = MarkdownNote.snapshot(from: text)
         XCTAssertEqual(restored.lines.count, 1, "a soft break must not become a new line")
         XCTAssertEqual(restored.lines[0].text, "head\(soft)tail")
+    }
+
+    func testUnstampedSoftBreaksSurviveAsPlainText() {
+        let soft = String(ParagraphIndex.softLineBreak)
+        let original = snapshot(
+            lines: [NoteSnapshot.Line(text: "before\(soft)after", stamp: nil)]
+        )
+
+        let text = MarkdownNote.text(for: original)
+        XCTAssertFalse(text.contains("[--:--:--.---]"))
+
+        let restored = MarkdownNote.snapshot(from: text)
+        XCTAssertEqual(restored.lines.count, 1)
+        XCTAssertEqual(restored.lines[0].text, "before\(soft)after")
+        XCTAssertNil(restored.lines[0].stamp)
     }
 
     func testEmptyLinesKeepTheirStamps() {

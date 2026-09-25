@@ -77,6 +77,44 @@ final class TypingTests: XCTestCase {
         XCTAssertNotEqual(controller.stampText(forLine: 1), "--:--:--")
     }
 
+    func testUndoAndRedoRestoreTheOriginalLineStamps() throws {
+        let controller = makeController()
+        controller.stampMode = .clock
+        let undoManager = UndoManager()
+        controller.hostUndoManager = undoManager
+        let firstStamp = LineStamp(wallClock: Date(timeIntervalSince1970: 1_000), kind: .clock)
+        let secondStamp = LineStamp(wallClock: Date(timeIntervalSince1970: 2_000), kind: .clock)
+        controller.load(lines: [
+            NoteSnapshot.Line(text: "first line", stamp: firstStamp),
+            NoteSnapshot.Line(text: "second line", stamp: secondStamp)
+        ])
+        let originalLines = controller.lines()
+        XCTAssertEqual(originalLines.map(\.text), ["first line", "second line"])
+
+        // Delete the second paragraph. Undo recreates it, which must recover
+        // its original stamp instead of stamping it with the time of Undo.
+        let deletedRange = NSRange(location: 10, length: 1 + ("second line" as NSString).length)
+        controller.textView.insertText("", replacementRange: deletedRange)
+        XCTAssertEqual(controller.textView.string, "first line")
+
+        undoManager.undo()
+        XCTAssertEqual(controller.textView.string, "first line\nsecond line")
+        XCTAssertEqual(
+            controller.lines().map(\.stamp),
+            originalLines.map(\.stamp),
+            "undo must restore the exact stamp of the recreated paragraph"
+        )
+
+        undoManager.redo()
+
+        XCTAssertEqual(controller.textView.string, "first line")
+        XCTAssertEqual(
+            controller.lines().map(\.stamp),
+            [firstStamp],
+            "redo must restore the post-deletion stamp state"
+        )
+    }
+
     /// Return alone is not writing: the fresh line stays blank in the gutter
     /// until the first character lands on it.
     func testAFreshLineWaitsForItsFirstCharacterBeforeShowingATime() {
@@ -248,7 +286,7 @@ final class TypingTests: XCTestCase {
         XCTAssertEqual(controller.stampText(forLine: 1), "", "the blank line has an empty gutter")
         XCTAssertEqual(
             controller.stampedText(selectionOnly: false),
-            "[60] first\n\n[--] before the timer"
+            "[60] first\n\nbefore the timer"
         )
     }
 
@@ -282,7 +320,18 @@ final class TypingTests: XCTestCase {
         controller.stampMode = .countdown
         controller.textView.insertText("hello", replacementRange: NSRange(location: 0, length: 0))
 
-        XCTAssertEqual(controller.stampText(forLine: 0), "--:--:--")
+        XCTAssertEqual(controller.stampText(forLine: 0), "")
+        XCTAssertNil(controller.lines()[0].stamp)
+        XCTAssertEqual(controller.gutter.preferredWidth, 0, "plain text has no empty stamp column")
+
+        _ = timerRunning(on: controller)
+        controller.textView.insertNewline(nil)
+        controller.textView.insertText("timed", replacementRange: controller.textView.selectedRange())
+
+        XCTAssertEqual(controller.stampText(forLine: 0), "", "starting the timer does not backfill earlier text")
+        XCTAssertNil(controller.lines()[0].stamp)
+        XCTAssertNotNil(controller.lines()[1].stamp)
+        XCTAssertGreaterThan(controller.gutter.preferredWidth, 0)
     }
 
     /// Each line is copied as the kind it was written in, whatever the toolbar

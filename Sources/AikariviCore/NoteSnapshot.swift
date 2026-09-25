@@ -54,9 +54,9 @@ public struct NoteSnapshot: Codable, Equatable {
 }
 
 public enum NoteExporter {
-    /// Renders the note as plain text with the stamps put back in front of each
-    /// line, right-aligned so the text column stays straight. Soft breaks become
-    /// real newlines indented under that column, keeping one stamp per line.
+    /// Renders plain text with stamps before stamped lines, right-aligned so the
+    /// text column stays straight. Unstamped lines stay plain; soft breaks
+    /// become real newlines.
     public static func plainText(lines: [NoteSnapshot.Line], format: StampFormat) -> String {
         let softBreak = String(ParagraphIndex.softLineBreak)
 
@@ -66,27 +66,23 @@ public enum NoteExporter {
                 .joined(separator: "\n")
         }
 
-        // Exactly what the gutter shows, line for line: each stamp in its own
-        // kind, at the detail on screen, and nothing at all beside a blank line
-        // that was never written on.
+        // Stamped lines use the detail shown on screen. Unstamped text stays
+        // plain; empty spacing lines remain empty.
         let stamps: [String?] = lines.map { line in
-            if let stamp = line.stamp {
-                return StampFormatter.string(for: stamp, format: format)
-            }
-            return line.text.isEmpty ? nil : StampFormatter.placeholder(for: format)
+            line.stamp.map { StampFormatter.string(for: $0, format: format) }
         }
         let width = stamps.compactMap { $0?.count }.max() ?? 0
 
         var output: [String] = []
         for (stamp, line) in zip(stamps, lines) {
+            let parts = line.text.components(separatedBy: softBreak)
             guard let stamp else {
-                output.append("")
+                output.append(contentsOf: parts)
                 continue
             }
 
             let padded = String(repeating: " ", count: width - stamp.count) + stamp
             let prefix = "[\(padded)] "
-            let parts = line.text.components(separatedBy: softBreak)
 
             output.append(prefix + (parts.first ?? ""))
             let continuation = String(repeating: " ", count: prefix.count)

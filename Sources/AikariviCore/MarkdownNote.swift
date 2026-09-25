@@ -2,8 +2,9 @@ import Foundation
 
 /// The document format: Markdown you can read in any editor.
 ///
-/// Stamps are always written at full precision, whatever the toolbar is set to
-/// show, so reopening a note keeps every detail level available:
+/// Stamped lines are always written at full precision, whatever the toolbar is
+/// set to show, so reopening a note keeps every detail level available.
+/// Unstamped lines stay plain Markdown text:
 ///
 /// ```
 /// ---
@@ -17,7 +18,7 @@ import Foundation
 /// [00:59:48.401] second thought
 ///                continued after a soft break
 /// [@ 2026-09-07T14:33:10.004] written as a clock stamp
-/// [--:--:--.---] written before the timer started
+/// written before the timer started
 /// ```
 ///
 /// Whichever time comes first is the one the line was stamped with, and the one
@@ -41,10 +42,16 @@ public enum MarkdownNote {
 
         let softBreak = String(ParagraphIndex.softLineBreak)
         for line in snapshot.lines {
-            let field = line.stamp.map { stampField($0) } ?? placeholderField
+            let parts = line.text.components(separatedBy: softBreak)
+            guard let stamp = line.stamp else {
+                output.append(trimmingTrailingSpaces(parts.first ?? ""))
+                output.append(contentsOf: parts.dropFirst().map { "  " + trimmingTrailingSpaces($0) })
+                continue
+            }
+
+            let field = stampField(stamp)
             let prefix = "[\(field)]"
             let indent = String(repeating: " ", count: prefix.count + 1)
-            let parts = line.text.components(separatedBy: softBreak)
 
             output.append(trimmingTrailingSpaces(prefix + " " + (parts.first ?? "")))
             output.append(contentsOf: parts.dropFirst().map { trimmingTrailingSpaces(indent + $0) })
@@ -67,15 +74,25 @@ public enum MarkdownNote {
         var format = StampFormat.clock
         var stampMode = StampMode.countdown
 
-        if body.first?.trimmingCharacters(in: .whitespaces) == "---" {
+        let hasFrontMatter = body.first?.trimmingCharacters(in: .whitespaces) == "---"
+        var isAikariviFrontMatter = false
+        if hasFrontMatter {
             var index = 1
             while index < body.count, body[index].trimmingCharacters(in: .whitespaces) != "---" {
                 let (key, value) = keyValue(in: body[index])
                 switch key {
-                case "timer": duration = seconds(from: value) ?? duration
-                case "remaining": heldRemaining = seconds(from: value)
-                case "detail": format = detail(from: value)
-                case "stamps": stampMode = mode(from: value)
+                case "timer":
+                    duration = seconds(from: value) ?? duration
+                    isAikariviFrontMatter = true
+                case "remaining":
+                    heldRemaining = seconds(from: value)
+                    isAikariviFrontMatter = true
+                case "detail":
+                    format = detail(from: value)
+                    isAikariviFrontMatter = true
+                case "stamps":
+                    stampMode = mode(from: value)
+                    isAikariviFrontMatter = true
                 default: break
                 }
                 index += 1
@@ -97,7 +114,8 @@ public enum MarkdownNote {
             // a line of its own, so plain Markdown opens sensibly too.
             let indent = raw.prefix { $0 == " " }.count
             if indent >= 2, var last = lines.popLast() {
-                let content = String(raw.dropFirst(min(indent, previousPrefixWidth)))
+                let fallbackIndent = isAikariviFrontMatter ? 2 : 0
+                let content = String(raw.dropFirst(min(indent, max(previousPrefixWidth, fallbackIndent))))
                 last.text += String(ParagraphIndex.softLineBreak) + content
                 lines.append(last)
                 continue
@@ -107,7 +125,7 @@ public enum MarkdownNote {
                 continue
             }
             lines.append(NoteSnapshot.Line(text: raw, stamp: nil))
-            previousPrefixWidth = 0
+            previousPrefixWidth = isAikariviFrontMatter ? 2 : 0
         }
 
         return NoteSnapshot(
@@ -240,9 +258,6 @@ public enum MarkdownNote {
             text.removeFirst()
         }
 
-        if field.allSatisfy({ $0 == "-" || $0 == ":" || $0 == "." }), field.contains("-") {
-            return (nil, text, prefixWidth)
-        }
         if let at = field.range(of: "@") {
             let left = field[..<at.lowerBound].trimmingCharacters(in: .whitespaces)
             let right = field[at.upperBound...].trimmingCharacters(in: .whitespaces)

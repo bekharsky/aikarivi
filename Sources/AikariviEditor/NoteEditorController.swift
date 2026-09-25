@@ -64,6 +64,14 @@ public final class NoteEditorController: NSObject, ObservableObject, NSTextViewD
     private var bookkeeper = StampBookkeeper()
     private var isLoading = false
 
+    private var activeUndoManager: UndoManager {
+        hostUndoManager ?? ownUndoManager
+    }
+
+    private var isApplyingUndoOrRedo: Bool {
+        activeUndoManager.isUndoing || activeUndoManager.isRedoing
+    }
+
     public override init() {
         textContainer.widthTracksTextView = true
         textContainer.size = NSSize(width: 400, height: CGFloat.greatestFiniteMagnitude)
@@ -138,8 +146,8 @@ public final class NoteEditorController: NSObject, ObservableObject, NSTextViewD
 
         textView.undoManager?.removeAllActions()
         textView.setSelectedRange(NSRange(location: storage.length, length: 0))
-        refreshGutter(resize: true)
         updateCaretState()
+        refreshGutter(resize: true)
     }
 
     /// Appends plain text dropped into an existing note. Going through the
@@ -169,12 +177,16 @@ public final class NoteEditorController: NSObject, ObservableObject, NSTextViewD
     }
 
     public func refreshGutter(resize: Bool) {
-        if resize {
+        let showsStamps = showsStampGutter
+        let shouldUpdateWidth = resize
+            || (showsStamps && gutter.preferredWidth == 0)
+            || (!showsStamps && gutter.preferredWidth != 0)
+        if shouldUpdateWidth {
             let sample = StampFormatter.widestSample(
                 duration: timer?.duration ?? 3600,
                 format: format
             )
-            if gutter.updateWidth(sample: sample) {
+            if gutter.updateWidth(sample: showsStamps ? sample : "") {
                 containerView.needsLayout = true
             }
         }
@@ -189,13 +201,10 @@ public final class NoteEditorController: NSObject, ObservableObject, NSTextViewD
     func stampText(forLine index: Int) -> String {
         guard !format.isEmpty else { return "" }
         guard let stamp = bookkeeper.stamp(forLine: index) else {
-            // An empty line has not been written on yet. The one the caret sits
-            // on shows a placeholder to say a stamp is coming; any other blank
-            // line is just spacing, and dashes there would be noise.
-            let isEmpty = bookkeeper.paragraphs.range(forLine: index).length == 0
-            if isEmpty, index != waitingLine {
-                return ""
-            }
+            // Only the active empty line gets a placeholder. Text written
+            // before a countdown starts stays plain instead of carrying an
+            // empty-looking mark in the gutter.
+            guard index == waitingLine else { return "" }
             return StampFormatter.placeholder(for: format)
         }
         return StampFormatter.string(for: stamp, format: format)
@@ -225,6 +234,12 @@ public final class NoteEditorController: NSObject, ObservableObject, NSTextViewD
         case .clock: return true
         case .countdown: return timer?.phase.isActive ?? false
         }
+    }
+
+    private var showsStampGutter: Bool {
+        guard !format.isEmpty else { return false }
+        return waitingLine != nil
+            || (0..<bookkeeper.lineCount).contains { bookkeeper.stamp(forLine: $0) != nil }
     }
 
     func lineIndexRange(intersecting characterRange: NSRange) -> Range<Int> {
@@ -260,7 +275,24 @@ public final class NoteEditorController: NSObject, ObservableObject, NSTextViewD
         shouldChangeTextIn affectedCharRange: NSRange,
         replacementString: String?
     ) -> Bool {
-        guard !isLoading, let replacementString else { return true }
+        guard !isLoading, !isApplyingUndoOrRedo, let replacementString else { return true }
+
+        let currentText = storage.string as NSString
+        guard affectedCharRange.location <= currentText.length,
+              affectedCharRange.length <= currentText.length - affectedCharRange.location
+        else { return true }
+
+        guard currentText.substring(with: affectedCharRange) != replacementString else {
+            return true
+        }
+
+        // The text view registers its text inverse after this delegate call.
+        // Register the parallel stamp state first so Undo restores the text
+        // before restoring the matching stamps.
+        let previousBookkeeper = bookkeeper
+        activeUndoManager.registerUndo(withTarget: self) { controller in
+            controller.restoreBookkeeper(previousBookkeeper)
+        }
 
         bookkeeper.prepareEdit(
             currentText: storage.string,
@@ -274,9 +306,14 @@ public final class NoteEditorController: NSObject, ObservableObject, NSTextViewD
     public func textDidChange(_ notification: Notification) {
         guard !isLoading else { return }
 
-        bookkeeper.commitEdit(newText: storage.string)
-        refreshGutter(resize: false)
+        // During Undo/Redo the paired bookkeeping action restores a complete
+        // snapshot. Applying the regular edit algorithm here would stamp any
+        // recreated line with the time Undo/Redo happened.
+        if !isApplyingUndoOrRedo {
+            bookkeeper.commitEdit(newText: storage.string)
+        }
         updateCaretState()
+        refreshGutter(resize: false)
         onChange?()
     }
 
@@ -289,7 +326,7 @@ public final class NoteEditorController: NSObject, ObservableObject, NSTextViewD
     public func textViewDidChangeSelection(_ notification: Notification) {
         guard !isLoading else { return }
         updateCaretState()
-        gutter.needsDisplay = true
+        refreshGutter(resize: false)
     }
 
     // MARK: - Internals
@@ -304,6 +341,20 @@ public final class NoteEditorController: NSObject, ObservableObject, NSTextViewD
             }
             return LineStamp(wallClock: Date())
         }
+    }
+
+    private func restoreBookkeeper(_ snapshot: StampBookkeeper) {
+        // Register the inverse from the current state, making the same
+        // snapshots work in both directions.
+        let currentBookkeeper = bookkeeper
+        activeUndoManager.registerUndo(withTarget: self) { controller in
+            controller.restoreBookkeeper(currentBookkeeper)
+        }
+
+        bookkeeper = snapshot
+        refreshGutter(resize: false)
+        updateCaretState()
+        onChange?()
     }
 
     @objc private func redrawGutter() {

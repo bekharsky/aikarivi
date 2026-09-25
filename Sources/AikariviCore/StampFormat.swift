@@ -116,9 +116,8 @@ public enum StampFormatter {
         return text
     }
 
-    /// Same shape as a real stamp, for lines that have no value in the current
-    /// mode — written before the timer, or opened from a file that only kept
-    /// the other half of the stamp.
+    /// Same shape as a real stamp, for an empty line waiting to be written or
+    /// incomplete legacy stamp data.
     public static func placeholder(for format: StampFormat) -> String {
         guard !format.isEmpty else { return "" }
 

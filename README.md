@@ -41,11 +41,11 @@ is only a redraw.
   has, and nothing blinks — there is no new line to wait for. ⌥Return does the
   same.
 - **Pasting a block** stamps every line it creates with the current time left.
-- **A line written before the timer started** has no countdown stamp, shows
-  `--:--:--` and keeps it that way. Editing it later never backdates it; only
-  lines you write under a running timer get a remaining time. Switch the toolbar
-  from countdown to the clock and new lines take the time of day instead, even
-  with the timer idle — that is the interstitial-journal mode.
+- **A line written before the timer started** stays plain text. Editing it later
+  never backdates it; only lines you write under a running timer get a remaining
+  time. Switch the toolbar from countdown to the clock and new lines take the
+  time of day instead, even with the timer idle — that is the interstitial-journal
+  mode.
 - **A line keeps the kind of time it was written with.** Switching modes decides
   what the next line gets and rewrites nothing: countdown lines go on showing the
   countdown, clock lines go on showing the clock, and a note where you changed
@@ -80,9 +80,10 @@ left reads as `60` minutes, not `00`. Turning everything off hides the gutter.
 back in front of the lines you selected, cutting the first and last line down to
 the selection and keeping their stamps. With nothing selected it copies the whole
 note. It always uses the detail on screen, never the full precision from the
-file, so pasting minutes-only notes elsewhere stays clean; with every unit off it
-copies bare text. A plain ⌘C still copies the text alone, and **Export as Text…**
-(⌘E) writes the stamped version to any file.
+file, so pasting minutes-only notes elsewhere stays clean; lines without stamps
+stay plain, and with every unit off it copies bare text. A plain ⌘C still copies
+the text alone, and **Export as Text…** (⌘E) writes the stamped version to any
+file.
 
 A line broken with ⌘Return is copied as a real newline indented under the stamp
 column, so one screen line stays one line of output.
@@ -106,7 +107,7 @@ detail: h:m
 [00:58:12.900] the numbers in section 3 do not add up
                checked twice, still off by 400
 [@ 2026-09-07T14:41:22.500] switched to clock stamps here
-[--:--:--.---] jotted down before the timer started
+jotted down before the timer started
 ```
 
 Stamps in the file are always written at full precision, whatever the status bar
@@ -198,8 +199,3 @@ real typing sequences, `TypingTests` types into a live text view, and
 `GutterRenderTests` renders offscreen — including a note hosted in a real SwiftUI
 window, which is how the missing-text bug above was found and is kept from
 returning.
-
-## Known gaps
-
-- Undo restores the text, but a line recreated by undo is stamped with the time
-  at which you pressed undo, not its original one.

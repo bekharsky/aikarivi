@@ -96,8 +96,8 @@ final class TimedNoteDocument: ReferenceFileDocument {
 
     // MARK: - Output
 
-    /// Copies the selected lines with their stamps, or the whole note when
-    /// nothing is selected.
+    /// Copies the selected lines with stamps where present, or the whole note
+    /// when nothing is selected. Unstamped text stays plain.
     @MainActor
     func copyWithStamps() {
         let pasteboard = NSPasteboard.general
