@@ -1,0 +1,47 @@
+name: macOS Compatibility
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test on ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS 26 SDK
+            runner: macos-26
+          - name: Xcode 27 SDK
+            runner: xcode-27
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Show toolchain
+        run: |
+          sw_vers
+          xcode-select -p
+          xcodebuild -version
+          xcodebuild -showsdks | sed -n '/macOS SDKs:/,/tvOS SDKs:/p'
+
+      - name: Run tests with the macOS 13 deployment target
+        run: |
+          xcodebuild \
+            -quiet \
+            -project Aikarivi.xcodeproj \
+            -scheme Aikarivi \
+            -destination 'platform=macOS' \
+            MACOSX_DEPLOYMENT_TARGET=13.0 \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            test

@@ -112,9 +112,15 @@ private struct WindowAppearanceConfigurator: NSViewRepresentable {
     func updateNSView(_ nsView: NSView, context: Context) {
         DispatchQueue.main.async {
             guard let window = nsView.window else { return }
-            window.titlebarAppearsTransparent = true
-            window.titleVisibility = .visible
             window.backgroundColor = .white
+
+            // The transparent titlebar is needed for the opaque toolbar
+            // material introduced in macOS 27. Earlier systems keep their
+            // native titlebar and toolbar appearance.
+            if #available(macOS 27.0, *) {
+                window.titlebarAppearsTransparent = true
+                window.titleVisibility = .visible
+            }
         }
     }
 }

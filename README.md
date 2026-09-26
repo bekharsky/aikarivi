@@ -140,22 +140,29 @@ For tests or a release archive, use the same Xcode scheme:
 
 ```sh
 xcodebuild -project Aikarivi.xcodeproj -scheme Aikarivi \
-  -destination 'platform=macOS' test
+  -destination 'platform=macOS' \
+  MACOSX_DEPLOYMENT_TARGET=13.0 \
+  CODE_SIGNING_ALLOWED=NO \
+  CODE_SIGNING_REQUIRED=NO test
 xcodebuild -project Aikarivi.xcodeproj -scheme Aikarivi \
-  -configuration Release archive
+  -configuration Release \
+  -destination 'generic/platform=macOS' \
+  -archivePath .build/Aikarivi.xcarchive \
+  MACOSX_DEPLOYMENT_TARGET=13.0 \
+  CODE_SIGNING_ALLOWED=NO \
+  CODE_SIGNING_REQUIRED=NO archive
 ```
 
-Xcode Cloud uses `ci_scripts/ci_post_clone.sh` to write
-`CI_BUILD_NUMBER` into `CURRENT_PROJECT_VERSION`; the cloud build number is
-the release source of truth, while the value in `AppInfo.xcconfig` is a local
-fallback.
+The local archive is unsigned. Xcode Cloud writes `CI_BUILD_NUMBER` into
+`CURRENT_PROJECT_VERSION`; GitHub Release uses `GITHUB_RUN_NUMBER`. The value
+in `AppInfo.xcconfig` is the local and App Store marketing-version fallback.
 
 The App Store archive workflow watches the `release` branch. Normal development
 lands on `main`; merge `main` into `release` when a version is ready to produce
 the signed release archive.
 
-The App Store marketing version lives in the same config. Bump it before a
-release with one of:
+The marketing version for local and App Store builds lives in
+`AppInfo.xcconfig`. Bump it for those builds with one of:
 
 ```sh
 ./bump-version.sh --patch
@@ -175,6 +182,62 @@ The application bundle identifier and the legacy document type identifier retain
 their original values for App Store, sandbox, and document compatibility. The
 product, executable, Xcode scheme, and Swift modules are named Aikarivi.
 
+### GitHub Release
+
+GitHub downloads use a Developer ID signed, hardened-runtime build that is
+notarized by Apple. This is separate from the sandboxed App Store archive made
+by Xcode Cloud. `.github/workflows/release.yml` runs for `vX.Y.Z` tags or a
+manual dispatch from `main`. For a tag-triggered release, the tag is the source
+of truth for `MARKETING_VERSION`; it does not have to match `AppInfo.xcconfig`.
+The workflow tests, archives a universal app with a macOS 13 minimum, notarizes
+it, and publishes both `Aikarivi-<version>-macOS.zip` and the stable
+`Aikarivi-macOS.zip` asset. It also refreshes the Pages download at the existing
+site URL.
+
+Add these repository Actions secrets before creating a release:
+
+- `APPLE_DEVELOPER_ID_CERTIFICATE_BASE64` — base64-encoded Developer ID
+  Application `.p12` certificate.
+- `APPLE_DEVELOPER_ID_CERTIFICATE_PASSWORD` — password for that certificate.
+- `APPLE_NOTARY_KEY_ID` and `APPLE_NOTARY_ISSUER_ID` — App Store Connect API
+  key identifiers.
+- `APPLE_NOTARY_PRIVATE_KEY_BASE64` — base64-encoded `.p8` key for notarization.
+
+The release action stops if a secret is missing, if a pushed tag is not exactly
+`vMAJOR.MINOR.PATCH`, if the tag already points at a different commit, or if the
+archived app does not report the tag version and macOS 13 as its minimum system
+version. It does not produce an unsigned or ad-hoc public release.
+
+The normal GitHub release flow is:
+
+1. Push the release-ready commit to `main`. The GitHub release version comes
+   from the tag, so a matching `MARKETING_VERSION` edit is not required for the
+   release archive. Set `AppInfo.xcconfig` separately for local and App Store
+   builds if needed.
+
+2. Tag that commit and push the tag:
+
+   ```sh
+   git tag -a v1.0.0 -m "Release 1.0.0"
+   git push origin v1.0.0
+   ```
+
+3. GitHub Actions reads `1.0.0` from `v1.0.0`, applies it to the app bundle,
+   tests and publishes the release, then redeploys the Pages site
+   with the notarized app. The Pages workflow also refreshes that ZIP after later
+   site edits. Until the first GitHub Release exists, it keeps the checked-in ZIP
+   as a download fallback.
+
+The workflow can also be started manually from the Actions tab by entering a
+version such as `1.0.0`. It creates the matching `v1.0.0` release tag from the
+current `main` commit and uses that version in the app bundle.
+
+All app and test targets use a macOS 13 deployment target. The CI workflow builds
+and runs tests with that minimum against the macOS 26 and Xcode 27 SDKs. Toolbar
+placements and `Material.bar` are available at that minimum; the macOS 27 titlebar
+appearance is availability-guarded, leaving the native window appearance in
+place on macOS 13–26.
+
 Requires macOS 13 or later.
 
 ## Website
@@ -183,8 +246,9 @@ The GitHub Pages site is served from `docs/`. Changes pushed to `main` publish
 automatically through `.github/workflows/pages.yml` at
 <https://bekharsky.github.io/aikarivi/>.
 
-The download is `docs/assets/Aikarivi-macOS.zip`, containing the Xcode-built
-`Aikarivi.app` with its icon and frameworks.
+The Pages download is `docs/assets/Aikarivi-macOS.zip`, containing the latest
+notarized `Aikarivi.app` with its icon and frameworks. Before the first GitHub
+Release, Pages uses the checked-in ZIP as a fallback.
 
 ## Layout
 

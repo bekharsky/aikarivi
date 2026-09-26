@@ -1,0 +1,350 @@
+name: GitHub Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (without v), for example 1.0.0"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Test
+    runs-on: xcode-27
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Run tests with the macOS 13 deployment target
+        run: |
+          xcodebuild \
+            -quiet \
+            -project Aikarivi.xcodeproj \
+            -scheme Aikarivi \
+            -destination 'platform=macOS' \
+            MACOSX_DEPLOYMENT_TARGET=13.0 \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            test
+
+  release:
+    name: Build, notarize, and publish
+    needs: test
+    runs-on: xcode-27
+    permissions:
+      contents: write
+
+    env:
+      REQUESTED_VERSION: ${{ inputs.version }}
+      APPLE_DEVELOPER_ID_CERTIFICATE_BASE64: ${{ secrets.APPLE_DEVELOPER_ID_CERTIFICATE_BASE64 }}
+      APPLE_DEVELOPER_ID_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_CERTIFICATE_PASSWORD }}
+      APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+      APPLE_NOTARY_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
+      APPLE_NOTARY_PRIVATE_KEY_BASE64: ${{ secrets.APPLE_NOTARY_PRIVATE_KEY_BASE64 }}
+
+    outputs:
+      version: ${{ steps.validate.outputs.version }}
+      tag: ${{ steps.validate.outputs.tag }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Validate version and signing inputs
+        id: validate
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for required in \
+            APPLE_DEVELOPER_ID_CERTIFICATE_BASE64 \
+            APPLE_DEVELOPER_ID_CERTIFICATE_PASSWORD \
+            APPLE_NOTARY_KEY_ID \
+            APPLE_NOTARY_ISSUER_ID \
+            APPLE_NOTARY_PRIVATE_KEY_BASE64
+          do
+            if [[ -z "${!required}" ]]; then
+              echo "::error::Missing GitHub Actions secret: ${required}"
+              exit 1
+            fi
+          done
+
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+              echo "::error::Start manual releases from main"
+              exit 1
+            fi
+            version="${REQUESTED_VERSION#v}"
+          else
+            if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "::error::Release tag must look like v1.0.0; got '$GITHUB_REF_NAME'"
+              exit 1
+            fi
+            version="${GITHUB_REF_NAME#v}"
+          fi
+
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Release version must look like 1.0.0; got '${version:-empty}'"
+            exit 1
+          fi
+
+          tag_refs="$(git ls-remote origin "refs/tags/v$version" "refs/tags/v$version^{}")"
+          if [[ -n "$tag_refs" ]]; then
+            tag_commit="$(printf '%s\n' "$tag_refs" | awk '$2 ~ /\^\{\}$/ { print $1; found = 1; exit } END { if (!found) exit 1 }' || true)"
+            if [[ -z "$tag_commit" ]]; then
+              tag_commit="$(printf '%s\n' "$tag_refs" | awk '$2 !~ /\^\{\}$/ { print $1; exit }')"
+            fi
+            if [[ "$tag_commit" != "$GITHUB_SHA" ]]; then
+              echo "::error::Tag v$version already points to a different commit; bump the version before releasing this code"
+              exit 1
+            fi
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          echo "MARKETING_VERSION=$version" >> "$GITHUB_ENV"
+          echo "RELEASE_TAG=v$version" >> "$GITHUB_ENV"
+          echo "Release version from tag/input: $version"
+
+      - name: Import Developer ID certificate
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          keychain_path="$RUNNER_TEMP/aikarivi-build.keychain-db"
+          keychain_password="$(openssl rand -hex 24)"
+          certificate_path="$RUNNER_TEMP/developer-id-application.p12"
+
+          printf '%s' "$APPLE_DEVELOPER_ID_CERTIFICATE_BASE64" | base64 -D > "$certificate_path"
+          security create-keychain -p "$keychain_password" "$keychain_path"
+          security set-keychain-settings -lut 21600 "$keychain_path"
+          security unlock-keychain -p "$keychain_password" "$keychain_path"
+          security import "$certificate_path" \
+            -k "$keychain_path" \
+            -P "$APPLE_DEVELOPER_ID_CERTIFICATE_PASSWORD" \
+            -A \
+            -t cert \
+            -f pkcs12
+          security set-key-partition-list \
+            -S apple-tool:,apple: \
+            -s \
+            -k "$keychain_password" \
+            "$keychain_path"
+          security list-keychains -d user -s "$keychain_path" login.keychain-db
+          security default-keychain -s "$keychain_path"
+
+          signing_identity="$(security find-identity -v -p codesigning "$keychain_path" \
+            | awk -F '"' '/Developer ID Application:/ { print $2; exit }')"
+          if [[ -z "$signing_identity" ]]; then
+            echo "::error::The imported keychain does not contain a Developer ID Application identity"
+            exit 1
+          fi
+
+          echo "KEYCHAIN_PATH=$keychain_path" >> "$GITHUB_ENV"
+          echo "CODE_SIGN_IDENTITY=$signing_identity" >> "$GITHUB_ENV"
+
+      - name: Archive the non-sandboxed Release app
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          archive_path="$RUNNER_TEMP/Aikarivi.xcarchive"
+          xcodebuild \
+            -quiet \
+            -project Aikarivi.xcodeproj \
+            -scheme Aikarivi \
+            -configuration Release \
+            -sdk macosx \
+            -archivePath "$archive_path" \
+            ARCHS="arm64 x86_64" \
+            MACOSX_DEPLOYMENT_TARGET=13.0 \
+            MARKETING_VERSION="$MARKETING_VERSION" \
+            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="$CODE_SIGN_IDENTITY" \
+            CODE_SIGN_ENTITLEMENTS=Packaging/DeveloperID.entitlements \
+            ENABLE_APP_SANDBOX=NO \
+            ENABLE_HARDENED_RUNTIME=YES \
+            archive
+
+          app_path="$archive_path/Products/Applications/Aikarivi.app"
+          test -d "$app_path"
+          codesign --verify --deep --strict "$app_path"
+
+          short_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app_path/Contents/Info.plist")"
+          minimum_version="$(/usr/libexec/PlistBuddy -c 'Print :LSMinimumSystemVersion' "$app_path/Contents/Info.plist")"
+          if [[ "$short_version" != "$MARKETING_VERSION" || "$minimum_version" != "13.0" ]]; then
+            echo "::error::Unexpected app metadata: version=$short_version minimum macOS=$minimum_version"
+            exit 1
+          fi
+
+          architectures="$(lipo -archs "$app_path/Contents/MacOS/Aikarivi")"
+          for architecture in arm64 x86_64; do
+            if [[ " $architectures " != *" $architecture "* ]]; then
+              echo "::error::Release app is missing the $architecture architecture (found: $architectures)"
+              exit 1
+            fi
+          done
+
+          if codesign --display --entitlements :- "$app_path" 2>&1 | grep -q 'com.apple.security.app-sandbox'; then
+            echo "::error::The Developer ID build unexpectedly contains App Sandbox entitlements"
+            exit 1
+          fi
+
+          echo "ARCHIVE_PATH=$archive_path" >> "$GITHUB_ENV"
+          echo "APP_PATH=$app_path" >> "$GITHUB_ENV"
+
+      - name: Submit app for notarization
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          notarization_zip="$RUNNER_TEMP/Aikarivi-notarization.zip"
+          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$notarization_zip"
+
+          notary_key_path="$RUNNER_TEMP/AuthKey_${APPLE_NOTARY_KEY_ID}.p8"
+          printf '%s' "$APPLE_NOTARY_PRIVATE_KEY_BASE64" | base64 -D > "$notary_key_path"
+          submission_json="$(xcrun notarytool submit "$notarization_zip" \
+            --key "$notary_key_path" \
+            --key-id "$APPLE_NOTARY_KEY_ID" \
+            --issuer "$APPLE_NOTARY_ISSUER_ID" \
+            --wait \
+            --output-format json)"
+          printf '%s\n' "$submission_json"
+
+          submission_id="$(printf '%s\n' "$submission_json" | jq -r '.id // empty')"
+          submission_status="$(printf '%s\n' "$submission_json" | jq -r '.status // empty')"
+          if [[ "$submission_status" != "Accepted" ]]; then
+            echo "::error::Apple notarization returned '${submission_status:-unknown}'"
+            if [[ -n "$submission_id" ]]; then
+              xcrun notarytool log "$submission_id" \
+                --key "$notary_key_path" \
+                --key-id "$APPLE_NOTARY_KEY_ID" \
+                --issuer "$APPLE_NOTARY_ISSUER_ID" || true
+            fi
+            exit 1
+          fi
+
+      - name: Staple and package notarized app
+        shell: bash
+        env:
+          VERSION: ${{ steps.validate.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          stapled=false
+          for attempt in 1 2 3 4 5 6; do
+            if xcrun stapler staple "$APP_PATH" && xcrun stapler validate "$APP_PATH"; then
+              stapled=true
+              break
+            fi
+            echo "Stapling is not visible yet; retrying in 10 seconds (attempt $attempt/6)"
+            sleep 10
+          done
+          if [[ "$stapled" != true ]]; then
+            echo "::error::Apple accepted the submission, but the notarization ticket could not be stapled"
+            exit 1
+          fi
+
+          spctl --assess --type execute --verbose=4 "$APP_PATH"
+          versioned_zip="$RUNNER_TEMP/Aikarivi-${VERSION}-macOS.zip"
+          stable_zip="$RUNNER_TEMP/Aikarivi-macOS.zip"
+          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$versioned_zip"
+          cp "$versioned_zip" "$stable_zip"
+          echo "VERSIONED_ZIP=$versioned_zip" >> "$GITHUB_ENV"
+          echo "STABLE_ZIP=$stable_zip" >> "$GITHUB_ENV"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.validate.outputs.tag }}
+          RELEASE_VERSION: ${{ steps.validate.outputs.version }}
+        run: |
+          set -euo pipefail
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" \
+              "$VERSIONED_ZIP" \
+              "$STABLE_ZIP" \
+              --repo "$GITHUB_REPOSITORY" \
+              --clobber
+          else
+            gh release create "$RELEASE_TAG" \
+              "$VERSIONED_ZIP" \
+              "$STABLE_ZIP" \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "Aikarivi $RELEASE_VERSION" \
+              --generate-notes
+          fi
+
+      - name: Upload current website download
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-download-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/Aikarivi-macOS.zip
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Remove temporary signing material
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          keychain_path="$RUNNER_TEMP/aikarivi-build.keychain-db"
+          if [[ -e "$keychain_path" ]]; then
+            security delete-keychain "$keychain_path" || true
+          fi
+          rm -f "$RUNNER_TEMP/developer-id-application.p12" "$RUNNER_TEMP/AuthKey_"*.p8
+
+  deploy-pages:
+    name: Publish latest app on GitHub Pages
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: github-pages
+      cancel-in-progress: true
+
+    steps:
+      - name: Check out latest site content
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Remove the checked-in bootstrap download
+        run: rm -f ./docs/assets/Aikarivi-macOS.zip
+
+      - name: Download the release app for the website
+        uses: actions/download-artifact@v4
+        with:
+          name: website-download-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ./docs/assets
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

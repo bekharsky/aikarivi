@@ -7,9 +7,9 @@ APP_DISPLAY_NAME = Aikarivi
 APP_PRODUCT_BUNDLE_IDENTIFIER = com.kharion.tickline
 APP_PRODUCT_COPYRIGHT = Copyright © 2026 Kharion. All rights reserved.
 
-// App Store version and local fallback build number. Xcode Cloud replaces the
-// build number with CI_BUILD_NUMBER in ci_scripts/ci_post_clone.sh.
-MARKETING_VERSION = 1.0.1
+// Local and App Store fallback. GitHub Release sets MARKETING_VERSION from v* tags.
+// Cloud and GitHub Actions replace the build number; this is the local fallback.
+MARKETING_VERSION = 1.0.0
 CURRENT_PROJECT_VERSION = 1
 
 APP_CODE_SIGN_STYLE = Automatic

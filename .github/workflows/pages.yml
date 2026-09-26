@@ -30,6 +30,25 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
+      - name: Refresh download from the latest GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if gh release view --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            release_dir="$RUNNER_TEMP/aikarivi-latest-release"
+            mkdir -p "$release_dir"
+            gh release download \
+              --repo "$GITHUB_REPOSITORY" \
+              --pattern "Aikarivi-macOS.zip" \
+              --dir "$release_dir"
+            cp "$release_dir/Aikarivi-macOS.zip" ./docs/assets/Aikarivi-macOS.zip
+          else
+            echo "No GitHub Release exists yet; keeping the checked-in download."
+          fi
+
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v4
         with:
