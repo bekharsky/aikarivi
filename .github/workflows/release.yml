@@ -307,44 +307,15 @@ jobs:
           fi
           rm -f "$RUNNER_TEMP/developer-id-application.p12" "$RUNNER_TEMP/AuthKey_"*.p8
 
-  deploy-pages:
-    name: Publish latest app on GitHub Pages
+  dispatch-pages:
+    name: Refresh GitHub Pages download
     needs: release
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    concurrency:
-      group: github-pages
-      cancel-in-progress: true
+      actions: write
 
     steps:
-      - name: Check out latest site content
-        uses: actions/checkout@v6
-        with:
-          ref: main
-
-      - name: Remove the checked-in bootstrap download
-        run: rm -f ./docs/assets/Aikarivi-macOS.zip
-
-      - name: Download the release app for the website
-        uses: actions/download-artifact@v4
-        with:
-          name: website-download-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ./docs/assets
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload site artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: ./docs
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Dispatch Pages deployment from main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref main
