@@ -5,7 +5,7 @@ APP_DISPLAY_NAME = Aikarivi
 // not credentials; private signing material stays in Xcode/Apple services.
 // Keep the existing App Store and sandbox identity across the product rename.
 APP_PRODUCT_BUNDLE_IDENTIFIER = com.kharion.tickline
-APP_PRODUCT_COPYRIGHT = Copyright © 2026 Kharion. All rights reserved.
+APP_PRODUCT_COPYRIGHT = Copyright © 2026 Sergey Bekharsky. All rights reserved.
 
 // Local and App Store fallback. GitHub Release sets MARKETING_VERSION from v* tags.
 // Cloud and GitHub Actions replace the build number; this is the local fallback.

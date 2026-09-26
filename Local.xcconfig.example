@@ -3,7 +3,7 @@
 
 // Preserve the production app identity when building an update.
 APP_PRODUCT_BUNDLE_IDENTIFIER = com.kharion.tickline
-APP_PRODUCT_COPYRIGHT = Copyright © 2026 Ilia Bekharsky. All rights reserved.
+APP_PRODUCT_COPYRIGHT = Copyright © 2026 Sergey Bekharsky. All rights reserved.
 
 APP_CODE_SIGN_STYLE = Automatic
 APP_DEVELOPMENT_TEAM =
