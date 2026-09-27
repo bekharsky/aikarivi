@@ -139,7 +139,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .duration-popover {
   position: absolute;
   top: calc(100% + 8px);
-  right: 0;
+  left: 0;
+  right: auto;
   z-index: 10;
   width: min(320px, calc(100vw - 32px));
   padding: 16px;
@@ -203,12 +204,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .new-note-button:hover { background: var(--sage-pale); }
 .editor-scroll { flex: 1 1 auto; min-height: 0; padding: 6px 0 14px; overflow-y: auto; }
 .note-editor { display: grid; align-content: start; gap: 4px; min-height: 100%; }
-.note-row { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; min-width: 0; font: 10px/1.55 var(--mono); }
+.note-row { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; min-width: 0; font: 10px/24px var(--mono); }
 .note-editor.has-timestamps .note-row { grid-template-columns: var(--stamp-width, 52px) minmax(0, 1fr); column-gap: var(--stamp-gap, 10px); }
-.line-stamp { display: block; position: relative; top: 1.5px; min-height: 23.25px; padding: 0; color: #899591; font: 500 11px/23.25px var(--mono); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.line-stamp { display: block; position: relative; top: 2px; min-height: 24px; padding: 0; color: #899591; font: 500 11px/24px var(--mono); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .line-stamp.is-clock { color: var(--sage); }
 .line-stamp.is-overtime { color: #bd6a53; }
-.note-line { display: block; width: 100%; min-width: 0; min-height: 23.25px; padding: 0 1px; overflow: hidden; resize: none; border: 0; border-radius: 0; outline: 0; background: transparent; color: var(--ink); font: 400 15px/23.25px var(--sans); overflow-wrap: anywhere; white-space: pre-wrap; }
+.note-line { display: block; width: 100%; min-width: 0; min-height: 24px; padding: 0 1px; overflow: hidden; resize: none; border: 0; border-radius: 0; outline: 0; background: transparent; color: var(--ink); font: 400 15px/24px var(--sans); overflow-wrap: anywhere; white-space: pre-wrap; }
 .note-line::placeholder { color: #8b9894; opacity: 1; }
 .note-line:focus-visible { outline: none; }
 .note-row:focus-within .line-stamp:not(:empty) { color: var(--sage); }

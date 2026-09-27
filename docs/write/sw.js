@@ -1,9 +1,9 @@
-const CACHE_NAME = "aikarivi-web-shell-v19";
+const CACHE_NAME = "aikarivi-web-shell-v25";
 const SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=13",
-  "./app.js?v=16",
+  "./styles.css?v=17",
+  "./app.js?v=18",
   "./manifest.webmanifest",
   "../favicon.svg",
 ];

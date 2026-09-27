@@ -301,7 +301,7 @@ private struct StatusBar: View {
             Text(stampDescription)
                 .monospacedDigit()
             Spacer()
-            DetailMenu(format: $editor.format, mode: editor.stampMode)
+            DetailMenu(format: $editor.format)
         }
         .font(.caption)
         .foregroundStyle(.secondary)
@@ -367,12 +367,11 @@ private struct StampModePicker: View {
     }
 }
 
-/// The detail level lives down here rather than in the toolbar. It is a setting
-/// touched rarely, the status bar already had to spell it out, and a menu of
-/// named units says far more than four cryptic letters ever did.
+/// One precision setting renders both clock and countdown stamps. Keep its menu
+/// available independently of the selected mode; named units are clearer than
+/// four cryptic letters.
 private struct DetailMenu: View {
     @Binding var format: StampFormat
-    var mode: StampMode
 
     var body: some View {
         Menu {
@@ -395,7 +394,7 @@ private struct DetailMenu: View {
         guard !format.isEmpty else { return "stamps hidden" }
 
         var units: [String] = []
-        if format.hours { units.append(mode == .clock ? "H" : "h") }
+        if format.hours { units.append("h") }
         if format.minutes { units.append("m") }
         if format.seconds { units.append(format.subseconds ? "s.1" : "s") }
         return units.joined(separator: ":")

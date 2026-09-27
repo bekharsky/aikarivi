@@ -343,10 +343,8 @@ function updateModeAndFormat() {
   const clockMode = record.mode === "clock";
   $("#timer-controls").hidden = clockMode;
   $("#clock-display").hidden = !clockMode;
-  $("#detail-menu").hidden = clockMode;
   if (clockMode) {
     setDurationMenuOpen(false);
-    setDetailMenuOpen(false);
   }
   updateTimerDisplay();
   updateAllStamps();
@@ -628,6 +626,20 @@ function splitLine(textarea) {
   saveNotebook({ quiet: true });
 }
 
+function insertSoftLineBreak(textarea) {
+  const index = Number(textarea.dataset.index);
+  const line = record.lines[index];
+  if (!line) return;
+  captureHistory(textarea);
+  const before = line.text.slice(0, textarea.selectionStart);
+  const after = line.text.slice(textarea.selectionEnd);
+  line.text = `${before}\n${after}`;
+  history.groupKey = "";
+  const caret = before.length + 1;
+  renderEditor({ focusIndex: index, selectionStart: caret, selectionEnd: caret });
+  saveNotebook({ quiet: true });
+}
+
 function mergeLine(textarea, direction) {
   const index = Number(textarea.dataset.index);
   const otherIndex = direction === "previous" ? index - 1 : index + 1;
@@ -693,6 +705,11 @@ function onEditorKeyDown(event) {
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "y") {
     event.preventDefault();
     redo();
+    return;
+  }
+  if (event.key === "Enter" && (event.shiftKey || event.metaKey || event.altKey)) {
+    event.preventDefault();
+    insertSoftLineBreak(textarea);
     return;
   }
   if (event.key === "Enter" && !event.shiftKey && !event.altKey && !event.metaKey && !event.ctrlKey) {
