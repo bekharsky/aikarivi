@@ -8,8 +8,8 @@
     <title>Aikarivi — quiet writing space</title>
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./styles.css?v=12" />
-    <script defer src="./app.js?v=15"></script>
+    <link rel="stylesheet" href="./styles.css?v=13" />
+    <script defer src="./app.js?v=16"></script>
   </head>
   <body>
     <header class="app-header">
@@ -65,11 +65,11 @@
             <button class="icon-button reset-button" id="reset-button" type="button" aria-label="Reset timer" title="Reset timer">
               <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.4 7.2A6.2 6.2 0 1 1 4 11M4.4 3.7v3.8h3.8" /></svg>
             </button>
-            <details class="duration-menu" id="duration-menu">
-              <summary aria-label="Timer duration settings" title="Timer duration settings">
+            <div class="duration-menu" id="duration-menu">
+              <button class="timer-trigger" id="timer-trigger" type="button" aria-label="Timer duration settings" aria-expanded="false" aria-controls="duration-popover" title="Timer duration settings">
                 <output class="timer-readout" id="timer-readout" aria-live="off">01:00:00</output>
-              </summary>
-              <div class="duration-popover">
+              </button>
+              <div class="duration-popover" id="duration-popover" hidden>
                 <p class="popover-heading">Timer duration</p>
                 <div class="duration-presets" aria-label="Timer presets">
                   <button type="button" data-duration="900">15 min</button>
@@ -85,7 +85,7 @@
                   <button type="submit">Set</button>
                 </form>
               </div>
-            </details>
+            </div>
           </div>
 
           <div class="detail-menu" id="detail-menu">

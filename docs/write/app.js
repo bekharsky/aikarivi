@@ -304,7 +304,14 @@ function setDuration(seconds) {
   updateTimerDisplay();
   updateAllStamps();
   saveNotebook();
-  $("#duration-menu").open = false;
+  setDurationMenuOpen(false);
+}
+
+function setDurationMenuOpen(open) {
+  const menu = $("#duration-menu");
+  menu.classList.toggle("is-open", open);
+  $("#duration-popover").hidden = !open;
+  $("#timer-trigger").setAttribute("aria-expanded", String(open));
 }
 
 function formatDetailLabel() {
@@ -338,7 +345,7 @@ function updateModeAndFormat() {
   $("#clock-display").hidden = !clockMode;
   $("#detail-menu").hidden = clockMode;
   if (clockMode) {
-    $("#duration-menu").open = false;
+    setDurationMenuOpen(false);
     setDetailMenuOpen(false);
   }
   updateTimerDisplay();
@@ -962,6 +969,9 @@ function init() {
   });
   $("#play-button").addEventListener("click", toggleTimer);
   $("#reset-button").addEventListener("click", resetTimer);
+  $("#timer-trigger").addEventListener("click", () => {
+    setDurationMenuOpen(!$("#duration-menu").classList.contains("is-open"));
+  });
   $("#detail-trigger").addEventListener("click", () => {
     setDetailMenuOpen(!$("#detail-menu").classList.contains("is-open"));
   });
@@ -1007,7 +1017,7 @@ function init() {
 
   const dismissOpenMenusOutside = (event) => {
     const durationMenu = $("#duration-menu");
-    if (durationMenu.open && !durationMenu.contains(event.target)) durationMenu.open = false;
+    if (durationMenu.classList.contains("is-open") && !durationMenu.contains(event.target)) setDurationMenuOpen(false);
     const detailMenu = $("#detail-menu");
     if (detailMenu.classList.contains("is-open") && !detailMenu.contains(event.target)) setDetailMenuOpen(false);
   };
@@ -1016,7 +1026,7 @@ function init() {
   document.addEventListener("focusin", dismissOpenMenusOutside);
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-      $("#duration-menu").open = false;
+      setDurationMenuOpen(false);
       setDetailMenuOpen(false);
     }
   });

@@ -130,10 +130,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .reset-button:hover:not(:disabled) { background: rgba(38, 52, 58, .06); color: var(--ink); }
 .reset-button:disabled { color: #bdc5c2; cursor: default; }
 .duration-menu { position: relative; }
-.duration-menu summary { display: flex; align-items: center; min-height: 29px; padding: 0 7px; border-radius: 6px; list-style: none; cursor: pointer; color: var(--ink); }
-.duration-menu summary::-webkit-details-marker { display: none; }
-.duration-menu summary:hover, .duration-menu[open] summary { background: #f1f5f1; }
-.duration-menu summary::marker { content: ""; }
+.timer-trigger { display: flex; align-items: center; min-height: 29px; padding: 0 7px; border: 0; border-radius: 6px; background: transparent; cursor: pointer; color: var(--ink); }
+.timer-trigger > * { pointer-events: none; }
+.timer-trigger:hover, .duration-menu.is-open .timer-trigger { background: #f1f5f1; }
 .timer-readout { min-width: 78px; cursor: inherit; font: 600 16px/1 var(--mono); letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
 .timer-readout.is-running { color: var(--sage); }
 .timer-readout.is-overtime { color: #bd6a53; }
@@ -206,7 +205,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .note-editor { display: grid; align-content: start; gap: 4px; min-height: 100%; }
 .note-row { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; min-width: 0; font: 10px/1.55 var(--mono); }
 .note-editor.has-timestamps .note-row { grid-template-columns: var(--stamp-width, 52px) minmax(0, 1fr); column-gap: var(--stamp-gap, 10px); }
-.line-stamp { display: block; position: relative; top: 1.5px; min-height: 23.25px; padding: 0; color: #899591; font: 500 10px/23.25px var(--mono); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.line-stamp { display: block; position: relative; top: 1.5px; min-height: 23.25px; padding: 0; color: #899591; font: 500 11px/23.25px var(--mono); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .line-stamp.is-clock { color: var(--sage); }
 .line-stamp.is-overtime { color: #bd6a53; }
 .note-line { display: block; width: 100%; min-width: 0; min-height: 23.25px; padding: 0 1px; overflow: hidden; resize: none; border: 0; border-radius: 0; outline: 0; background: transparent; color: var(--ink); font: 400 15px/23.25px var(--sans); overflow-wrap: anywhere; white-space: pre-wrap; }
@@ -240,7 +239,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   #note-picker { max-width: min(140px, 35vw); padding-right: 13px; font-size: 9px; }
   .note-editor { gap: 4px; }
   .note-row { font-size: 9px; }
-  .line-stamp { font-size: 9px; }
+  .line-stamp { font-size: 10px; }
   .note-line { font-size: 15px; }
   .note-footer { min-height: 25px; font-size: 9px; }
 }
