@@ -1,0 +1,18 @@
+{
+  "name": "Aikarivi — quiet writing space",
+  "short_name": "Aikarivi",
+  "description": "A zen, local-first writing space for focused work.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f7f4",
+  "theme_color": "#f5f7f4",
+  "icons": [
+    {
+      "src": "../favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

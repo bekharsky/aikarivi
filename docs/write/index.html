@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f7f5" />
+    <meta name="description" content="A quiet, local-first writing space. Focus on one task, capture each moment, and keep your notes on this device." />
+    <title>Aikarivi — quiet writing space</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css?v=12" />
+    <script defer src="./app.js?v=15"></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="brand" href="../" aria-label="Aikarivi home">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>Aikarivi</span>
+      </a>
+      <div class="header-actions">
+        <button class="quiet-button" id="import-button" type="button">Open</button>
+        <button class="export-button" id="export-button" type="button">Export .md</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <h1 class="visually-hidden">Aikarivi — focused writing</h1>
+
+      <section class="note-heading" aria-label="Document title">
+        <svg class="document-icon" viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M5 2.75h6.2L16 7.5v9.75H5z" />
+          <path d="M11 2.75V8h5M8 11h5M8 14h5" />
+        </svg>
+        <label class="visually-hidden" for="task-title">Document title</label>
+        <input id="task-title" class="note-title" type="text" maxlength="120" placeholder="Untitled note" autocomplete="off" />
+        <button class="edit-title-button" id="edit-title-button" type="button" aria-label="Edit document title" title="Edit title">
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="m13.8 3.2 3 3M3.5 16.5l3.6-.8L16 6.8a2.1 2.1 0 0 0-3-3l-8.9 8.9z" />
+          </svg>
+        </button>
+      </section>
+
+      <section class="session-panel" aria-label="Time and writing settings">
+        <div class="controls-main">
+          <div class="mode-switch" role="group" aria-label="Timestamp mode">
+            <button class="mode-button is-active" type="button" data-mode="countdown" aria-pressed="true">
+              Countdown
+            </button>
+            <button class="mode-button" type="button" data-mode="clock" aria-pressed="false">
+              Time of day
+            </button>
+          </div>
+
+          <div class="clock-display" id="clock-display" hidden>
+            <output id="clock-readout" aria-live="off"></output>
+          </div>
+
+          <div class="timer-controls" id="timer-controls" aria-label="Timer">
+            <button class="transport-button" id="play-button" type="button" aria-label="Start timer" title="Start timer">
+              <span class="transport-icon" id="transport-icon" aria-hidden="true">
+                <svg class="play-glyph" viewBox="0 0 20 20"><path d="M6.4 4.7c0-.7.8-1.1 1.4-.7l7.1 5c.5.4.5 1.2 0 1.6l-7.1 5c-.6.4-1.4 0-1.4-.7z" /></svg>
+                <svg class="pause-glyph" viewBox="0 0 20 20"><path d="M6 4.8h3v10.4H6zM11 4.8h3v10.4h-3z" /></svg>
+              </span>
+            </button>
+            <button class="icon-button reset-button" id="reset-button" type="button" aria-label="Reset timer" title="Reset timer">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.4 7.2A6.2 6.2 0 1 1 4 11M4.4 3.7v3.8h3.8" /></svg>
+            </button>
+            <details class="duration-menu" id="duration-menu">
+              <summary aria-label="Timer duration settings" title="Timer duration settings">
+                <output class="timer-readout" id="timer-readout" aria-live="off">01:00:00</output>
+              </summary>
+              <div class="duration-popover">
+                <p class="popover-heading">Timer duration</p>
+                <div class="duration-presets" aria-label="Timer presets">
+                  <button type="button" data-duration="900">15 min</button>
+                  <button type="button" data-duration="1500">25 min</button>
+                  <button type="button" data-duration="2700">45 min</button>
+                  <button type="button" data-duration="3600">1 hour</button>
+                  <button type="button" data-duration="5400">1.5 hours</button>
+                  <button type="button" data-duration="7200">2 hours</button>
+                </div>
+                <form id="custom-duration-form">
+                  <label for="custom-minutes">Minutes</label>
+                  <input id="custom-minutes" type="number" min="1" max="1440" value="60" inputmode="numeric" />
+                  <button type="submit">Set</button>
+                </form>
+              </div>
+            </details>
+          </div>
+
+          <div class="detail-menu" id="detail-menu">
+            <button class="detail-trigger" id="detail-trigger" type="button" aria-label="Timestamp detail" aria-expanded="false" aria-controls="detail-popover" title="Timestamp detail">
+              <span id="detail-readout">h:m:s</span>
+              <span class="detail-chevron" aria-hidden="true"></span>
+            </button>
+            <div class="detail-popover" id="detail-popover" hidden>
+              <p class="popover-heading">Timestamp detail</p>
+              <div class="detail-options" role="group" aria-label="Timestamp units">
+                <button class="detail-button is-selected" type="button" data-unit="hours" aria-label="Show hours" aria-pressed="true">Hours</button>
+                <button class="detail-button is-selected" type="button" data-unit="minutes" aria-label="Show minutes" aria-pressed="true">Minutes</button>
+                <button class="detail-button is-selected" type="button" data-unit="seconds" aria-label="Show seconds" aria-pressed="true">Seconds</button>
+                <button class="detail-button" type="button" data-unit="tenths" aria-label="Show tenths of a second" aria-pressed="false">Tenths</button>
+              </div>
+              <div class="format-presets" role="group" aria-label="Timestamp presets">
+                <button type="button" data-format="exact">Exact time</button>
+                <button type="button" data-format="minutesOnly">Minutes only</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="note-card" aria-label="Your local note">
+        <div class="note-toolbar">
+          <div class="note-picker">
+            <label class="visually-hidden" for="note-picker">Choose a note</label>
+            <select id="note-picker" aria-label="Choose a note"></select>
+            <button class="new-note-button" id="new-note-button" type="button" title="Start a new note">+</button>
+          </div>
+        </div>
+
+        <div class="editor-scroll">
+          <div class="note-editor" id="note-editor" aria-label="Timestamped note"></div>
+        </div>
+
+        <div class="note-footer">
+          <span id="line-count">0 lines</span>
+          <div><span class="local-indicator" aria-hidden="true"></span><span id="autosave-label">Saved on this device</span></div>
+        </div>
+      </section>
+
+    </main>
+
+    <input class="visually-hidden" id="file-input" type="file" accept=".md,.markdown,.txt,text/plain,text/markdown" />
+  </body>
+</html>
