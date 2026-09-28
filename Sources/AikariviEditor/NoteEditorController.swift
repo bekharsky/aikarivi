@@ -177,16 +177,14 @@ public final class NoteEditorController: NSObject, ObservableObject, NSTextViewD
     }
 
     public func refreshGutter(resize: Bool) {
-        let showsStamps = showsStampGutter
-        let shouldUpdateWidth = resize
-            || (showsStamps && gutter.preferredWidth == 0)
-            || (!showsStamps && gutter.preferredWidth != 0)
-        if shouldUpdateWidth {
+        // The writing column stays in place before the timer starts, on blank
+        // notes and when stamp labels are hidden. Only the detail changes its size.
+        if resize || gutter.preferredWidth == 0 {
             let sample = StampFormatter.widestSample(
                 duration: timer?.duration ?? 3600,
-                format: format
+                format: format.isEmpty ? .clock : format
             )
-            if gutter.updateWidth(sample: showsStamps ? sample : "") {
+            if gutter.updateWidth(sample: sample) {
                 containerView.needsLayout = true
             }
         }
@@ -234,12 +232,6 @@ public final class NoteEditorController: NSObject, ObservableObject, NSTextViewD
         case .clock: return true
         case .countdown: return timer?.phase.isActive ?? false
         }
-    }
-
-    private var showsStampGutter: Bool {
-        guard !format.isEmpty else { return false }
-        return waitingLine != nil
-            || (0..<bookkeeper.lineCount).contains { bookkeeper.stamp(forLine: $0) != nil }
     }
 
     func lineIndexRange(intersecting characterRange: NSRange) -> Range<Int> {

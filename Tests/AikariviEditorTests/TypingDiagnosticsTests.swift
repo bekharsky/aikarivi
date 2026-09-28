@@ -322,7 +322,8 @@ final class TypingTests: XCTestCase {
 
         XCTAssertEqual(controller.stampText(forLine: 0), "")
         XCTAssertNil(controller.lines()[0].stamp)
-        XCTAssertEqual(controller.gutter.preferredWidth, 0, "plain text has no empty stamp column")
+        let gutterWidth = controller.gutter.preferredWidth
+        XCTAssertGreaterThan(gutterWidth, 0, "the time column is reserved even for plain text")
 
         _ = timerRunning(on: controller)
         controller.textView.insertNewline(nil)
@@ -331,7 +332,8 @@ final class TypingTests: XCTestCase {
         XCTAssertEqual(controller.stampText(forLine: 0), "", "starting the timer does not backfill earlier text")
         XCTAssertNil(controller.lines()[0].stamp)
         XCTAssertNotNil(controller.lines()[1].stamp)
-        XCTAssertGreaterThan(controller.gutter.preferredWidth, 0)
+        XCTAssertEqual(controller.gutter.preferredWidth, gutterWidth, "starting the timer cannot shift the text")
+        XCTAssertEqual(controller.stampedText(selectionOnly: false).components(separatedBy: "\n").first, "hello")
     }
 
     /// Each line is copied as the kind it was written in, whatever the toolbar

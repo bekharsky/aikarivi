@@ -74,7 +74,8 @@ for Hours, Minutes, Seconds, and Tenths (⌘1 … ⌘4). Exact time is ⌘0; min
 only is ⌘9.
 
 Turning a larger unit off rolls it into the next one: with hours off, an hour
-left reads as `60` minutes, not `00`. Turning everything off hides the gutter.
+left reads as `60` minutes, not `00`. Turning everything off hides the labels;
+the left column stays reserved, including on notes without timestamps.
 
 **Copy with Timestamps** — the ⧉ button, ⇧⌘C, or the Edit menu — puts the stamps
 back in front of the lines you selected, cutting the first and last line down to

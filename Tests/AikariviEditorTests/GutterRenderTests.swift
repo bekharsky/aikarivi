@@ -37,7 +37,9 @@ final class GutterRenderTests: XCTestCase {
             try? data.write(to: URL(fileURLWithPath: "/tmp/timed-notes-\(name).png"))
         }
 
-        let background = try XCTUnwrap(rep.colorAt(x: rep.pixelsWide - 2, y: rep.pixelsHigh - 2))
+        // The right edge contains the separator (two pixels on Retina). Sample
+        // the empty left corner, otherwise the paper itself is counted as ink.
+        let background = try XCTUnwrap(rep.colorAt(x: 1, y: rep.pixelsHigh - 2))
         var ink = 0
         for y in 0..<rep.pixelsHigh {
             for x in 0..<max(0, rep.pixelsWide - 3) {
@@ -67,11 +69,13 @@ final class GutterRenderTests: XCTestCase {
         XCTAssertGreaterThan(exact, minutes, "H:mm:ss.t is wider than minutes only")
     }
 
-    func testTurningEveryUnitOffLeavesNoGutter() throws {
+    func testTurningEveryUnitOffKeepsTheIndentWithoutDrawingStamps() throws {
         let format = StampFormat(hours: false, minutes: false, seconds: false)
         let controller = makeController(lines: sampleLines(), format: format)
-        XCTAssertEqual(controller.gutter.preferredWidth, 0)
-        XCTAssertEqual(controller.gutter.frame.width, 0)
+        XCTAssertGreaterThan(controller.gutter.preferredWidth, 0)
+        XCTAssertGreaterThan(controller.gutter.frame.width, 0)
+        XCTAssertEqual(controller.stampText(forLine: 0), "")
+        XCTAssertEqual(try inkPixels(of: controller.gutter), 0)
     }
 
     func testGutterWidthFollowsTheFormat() {
@@ -112,7 +116,27 @@ final class GutterRenderTests: XCTestCase {
             format: .clock
         )
         XCTAssertEqual(controller.stampText(forLine: 0), "")
-        XCTAssertEqual(controller.gutter.preferredWidth, 0)
+        XCTAssertGreaterThan(controller.gutter.preferredWidth, 0)
+        XCTAssertEqual(controller.scrollView.frame.minX, controller.gutter.frame.width)
+    }
+
+    func testAddingStampsAndSwitchingModesDoesNotMoveTheText() {
+        let controller = makeController(lines: [NoteSnapshot.Line(text: "draft", stamp: nil)], format: .clock)
+        let textOrigin = controller.scrollView.frame.minX
+        XCTAssertGreaterThan(textOrigin, 0)
+
+        controller.load(lines: sampleLines())
+        controller.editorView.layoutSubtreeIfNeeded()
+        XCTAssertEqual(controller.scrollView.frame.minX, textOrigin)
+
+        controller.stampMode = .clock
+        controller.editorView.layoutSubtreeIfNeeded()
+        XCTAssertEqual(controller.scrollView.frame.minX, textOrigin)
+
+        controller.load(lines: [NoteSnapshot.Line(text: "plain again", stamp: nil)])
+        controller.stampMode = .countdown
+        controller.editorView.layoutSubtreeIfNeeded()
+        XCTAssertEqual(controller.scrollView.frame.minX, textOrigin)
     }
 
     /// The bug that made the app unusable: the gutter drew, the text did not.

@@ -1,4 +1,4 @@
-name: macOS Compatibility
+name: macOS and Web Compatibility
 
 on:
   push:
@@ -11,6 +11,21 @@ permissions:
   contents: read
 
 jobs:
+  web-editor:
+    name: Web editor bookkeeping
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Check web scripts and paragraph transactions
+        run: |
+          node --version
+          node --check docs/write/app.js
+          node --check docs/write/editor-model.js
+          node --check docs/write/sw.js
+          node --test Tests/WebEditorTests/editor-model.test.cjs
+
   test:
     name: Test on ${{ matrix.name }}
     runs-on: ${{ matrix.runner }}

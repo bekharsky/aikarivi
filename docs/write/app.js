@@ -2,8 +2,12 @@ const STORAGE_KEY = "aikarivi.web.v1";
 const MAX_HISTORY = 120;
 const $ = (selector) => document.querySelector(selector);
 const editor = $("#note-editor");
-
-const history = { undo: [], redo: [], groupKey: "", groupAt: 0 };
+const textInput = $("#note-input");
+const editorViewport = $(".editor-scroll");
+const rowNodes = new WeakMap();
+const history = new AikariviText.History(MAX_HISTORY);
+let pendingInput = null;
+let composing = false;
 let deadline = null;
 let tickHandle = null;
 let lastTimerPersistAt = 0;
@@ -351,98 +355,96 @@ function updateModeAndFormat() {
   ensureTicker();
 }
 
-function makeLineRow(line, index) {
+function makeLineRow(line) {
   const row = document.createElement("div");
   row.className = "note-row";
-  row.dataset.index = String(index);
-  const stamp = document.createElement("div");
-  stamp.className = "line-stamp";
-  stamp.setAttribute("aria-hidden", "true");
-  const textarea = document.createElement("textarea");
-  textarea.className = "note-line";
-  textarea.rows = 1;
-  textarea.value = line.text;
-  textarea.dataset.index = String(index);
-  textarea.setAttribute("aria-label", `Note line ${index + 1}`);
-  textarea.spellcheck = true;
-  textarea.autocapitalize = "sentences";
-  if (index === 0 && !line.text) textarea.placeholder = "Start writing here…";
-  row.append(stamp, textarea);
-  editor.append(row);
-  resizeTextarea(textarea);
-  paintStamp(row, line, index);
-}
-
-function renderEditor({ focusIndex, selectionStart, selectionEnd } = {}) {
-  editor.replaceChildren();
-  if (!record.lines.length) record.lines.push({ text: "", stamp: null });
-  record.lines.forEach(makeLineRow);
-  updateTimestampLayout();
-  updateLineCount();
-  if (Number.isInteger(focusIndex)) {
-    const target = editor.querySelector(`.note-line[data-index="${focusIndex}"]`);
-    if (target) {
-      target.focus({ preventScroll: true });
-      const start = Math.min(selectionStart ?? target.value.length, target.value.length);
-      const end = Math.min(selectionEnd ?? start, target.value.length);
-      target.setSelectionRange(start, end);
-    }
-  }
-}
-
-function resizeTextarea(textarea) {
-  textarea.style.height = "auto";
-  textarea.style.height = `${Math.max(textarea.scrollHeight, parseFloat(getComputedStyle(textarea).lineHeight))}px`;
+  const label = document.createElement("span");
+  label.className = "line-stamp";
+  const text = document.createElement("div");
+  text.className = "line-text";
+  // Keep an empty final visual line measurable. This character is only in the
+  // presentation layer: it never enters the input, notebook, copy or export.
+  text.textContent = line.text + (!line.text || line.text.endsWith("\n") ? "\u200b" : "");
+  row.append(label, text);
+  rowNodes.set(line, row);
+  return row;
 }
 
 function paintStamp(row, line, index) {
-  const stampElement = row.querySelector(".line-stamp");
+  const label = row.firstElementChild;
   const stamp = line.stamp;
   const value = formatStamp(stamp);
-  stampElement.textContent = value;
-  stampElement.classList.toggle("is-clock", stamp?.kind === "clock" && Boolean(value));
-  stampElement.classList.toggle("is-countdown", stamp?.kind === "countdown" && Boolean(value));
-  stampElement.classList.toggle("is-overtime", stamp?.kind === "countdown" && Number(stamp.remaining) < 0);
-  stampElement.title = value ? `Line started at ${stamp.wallClock ? new Date(stamp.wallClock).toLocaleTimeString() : "a saved time"}` : "";
+  label.textContent = value;
+  label.classList.toggle("is-clock", stamp?.kind === "clock");
+  label.classList.toggle("is-overtime", stamp?.kind === "countdown" && Number(stamp.remaining) < 0);
+  label.title = value && stamp.wallClock ? `Line started at ${new Date(stamp.wallClock).toLocaleTimeString()}` : "";
   row.dataset.index = String(index);
 }
 
-function updateTimestampLayout() {
-  const stampElements = [...editor.querySelectorAll(".line-stamp:not(:empty)")];
-  const hasTimestamps = stampElements.length > 0;
-  editor.classList.toggle("has-timestamps", hasTimestamps);
-  editor.closest(".note-card")?.classList.toggle("has-timestamps", hasTimestamps);
-  if (!hasTimestamps) {
-    editor.style.removeProperty("--stamp-width");
-    editor.style.removeProperty("--stamp-gap");
-    editor.closest(".note-card")?.style.removeProperty("--text-inset");
-    return;
+function renderRows() {
+  // Only the changed paragraphs get new nodes. The one native text input is
+  // never removed, resized to its contents or refocused when a line is created.
+  let next = editor.firstElementChild;
+  record.lines.forEach((line, index) => {
+    const row = rowNodes.get(line) || makeLineRow(line);
+    if (row === next) next = next.nextElementSibling;
+    else editor.insertBefore(row, next);
+    paintStamp(row, line, index);
+  });
+  while (next) {
+    const old = next;
+    next = next.nextElementSibling;
+    old.remove();
   }
+  syncEditorGeometry();
+  syncEditorScroll();
+}
 
-  const sampleDate = new Date(2000, 0, 1, 23, 59, 59, 900);
-  const samples = [
-    formatClock(sampleDate),
-    formatDuration(24 * 60 * 60),
-    formatDuration(-24 * 60 * 60),
-  ].filter(Boolean);
+function renderEditor({ focus = false, selectionStart, selectionEnd, direction = "none", scrollTop = 0 } = {}) {
+  if (!record.lines.length) record.lines = [{ text: "", stamp: null }];
+  textInput.value = AikariviText.text(record.lines);
+  pendingInput = null;
+  renderRows();
+  updateTimestampLayout();
+  updateLineCount();
+  const start = Math.min(selectionStart ?? textInput.value.length, textInput.value.length);
+  const end = Math.min(selectionEnd ?? start, textInput.value.length);
+  textInput.setSelectionRange(start, end, direction);
+  if (focus) textInput.focus({ preventScroll: true });
+  textInput.scrollTop = scrollTop;
+  syncEditorScroll();
+}
+
+function updateTimestampLayout() {
+  const label = editor.querySelector(".line-stamp");
+  if (!label) return;
+  const style = getComputedStyle(label);
   const context = document.createElement("canvas").getContext("2d");
-  const stampFont = getComputedStyle(editor.querySelector(".line-stamp")).font;
-  let width;
-  if (context) {
-    context.font = stampFont;
-    width = Math.ceil(Math.max(...samples.map((sample) => context.measureText(sample).width)) + 6);
-  } else {
-    width = Math.max(...samples.map((sample) => sample.length * 6));
-  }
+  // Reserve the full column even with no stamps or a shorter display format.
+  // Clock/countdown, Enter and the first timed character cannot move the text.
+  const exact = { hours: true, minutes: true, seconds: true, tenths: true };
+  const largest = record.lines.reduce((value, line) => Math.max(value, Math.abs(line.stamp?.remaining || 0)), Math.max(86400, record.duration));
+  const sample = formatDuration(-largest, exact);
+  if (context) context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  const width = Math.ceil(context ? context.measureText(sample).width : sample.length * 7);
   const gap = matchMedia("(max-width: 600px)").matches ? 8 : 10;
-  editor.style.setProperty("--stamp-width", `${width}px`);
-  editor.style.setProperty("--stamp-gap", `${gap}px`);
-  editor.closest(".note-card")?.style.setProperty("--text-inset", `${width + gap}px`);
+  editorViewport.style.setProperty("--stamp-width", `${width}px`);
+  editorViewport.style.setProperty("--stamp-gap", `${gap}px`);
+  syncEditorGeometry();
+}
+
+function syncEditorGeometry() {
+  // The native scrollbar has its own reserved space. Match the actual text
+  // width, so a wrapped line occupies exactly the same rows in both layers.
+  editor.style.width = `calc(var(--text-inset) + ${textInput.clientWidth}px)`;
+}
+
+function syncEditorScroll() {
+  editor.style.transform = `translateY(${-textInput.scrollTop}px)`;
 }
 
 function updateAllStamps() {
-  editor.querySelectorAll(".note-row").forEach((row) => {
-    const index = Number(row.dataset.index);
+  [...editor.children].forEach((row, index) => {
     if (record.lines[index]) paintStamp(row, record.lines[index], index);
   });
   updateTimestampLayout();
@@ -472,74 +474,57 @@ function updateNotePicker() {
 }
 
 function resetHistory() {
-  history.undo = [];
-  history.redo = [];
-  history.groupKey = "";
-  history.groupAt = 0;
-  updateHistoryButtons();
+  history.reset();
+  pendingInput = null;
 }
 
-function updateHistoryButtons() {
-  const undoButton = $("#undo-button");
-  const redoButton = $("#redo-button");
-  if (undoButton) undoButton.disabled = history.undo.length === 0;
-  if (redoButton) redoButton.disabled = history.redo.length === 0;
-}
-
-function cursorSnapshot(textarea) {
+function inputSelection() {
   return {
-    noteId: notebook.activeId,
-    lines: record.lines.map((line) => ({ text: line.text, stamp: line.stamp ? { ...line.stamp } : null })),
-    index: Number(textarea?.dataset.index ?? 0),
-    start: textarea?.selectionStart ?? 0,
-    end: textarea?.selectionEnd ?? 0,
+    start: textInput.selectionStart,
+    end: textInput.selectionEnd,
+    direction: textInput.selectionDirection,
+    scrollTop: textInput.scrollTop,
   };
 }
 
-function captureHistory(textarea, groupKey = "") {
-  const now = Date.now();
-  if (groupKey && history.groupKey === groupKey && now - history.groupAt < 850) {
-    history.groupAt = now;
-    return;
-  }
-  history.undo.push(cursorSnapshot(textarea));
-  if (history.undo.length > MAX_HISTORY) history.undo.shift();
-  history.redo = [];
-  history.groupKey = groupKey;
-  history.groupAt = now;
-  updateHistoryButtons();
+function cursorSnapshot(selection = inputSelection()) {
+  return { noteId: notebook.activeId, lines: record.lines, ...selection };
 }
 
 function applyHistorySnapshot(snapshot) {
   if (!snapshot || snapshot.noteId !== notebook.activeId) return;
-  record.lines = snapshot.lines.map((line) => ({ text: line.text, stamp: line.stamp ? { ...line.stamp } : null }));
-  renderEditor({ focusIndex: snapshot.index, selectionStart: snapshot.start, selectionEnd: snapshot.end });
-  saveNotebook();
+  record.lines = AikariviText.copyLines(snapshot.lines);
+  renderEditor({
+    focus: true,
+    selectionStart: snapshot.start,
+    selectionEnd: snapshot.end,
+    direction: snapshot.direction,
+    scrollTop: snapshot.scrollTop,
+  });
+  saveNotebook({ quiet: true });
 }
 
 function undo() {
-  if (!history.undo.length) return;
-  history.redo.push(cursorSnapshot(editor.querySelector(".note-line:focus")));
-  applyHistorySnapshot(history.undo.pop());
-  history.groupKey = "";
-  updateHistoryButtons();
+  applyHistorySnapshot(history.undo(cursorSnapshot()));
 }
 
 function redo() {
-  if (!history.redo.length) return;
-  history.undo.push(cursorSnapshot(editor.querySelector(".note-line:focus")));
-  applyHistorySnapshot(history.redo.pop());
-  history.groupKey = "";
-  updateHistoryButtons();
+  applyHistorySnapshot(history.redo(cursorSnapshot()));
 }
 
-function switchNote(id) {
-  if (!notebook.notes[id] || id === notebook.activeId) return;
+function pauseForDocumentChange() {
   if (deadline !== null) {
     record.remaining = currentRemaining();
     record.phase = "paused";
     deadline = null;
   }
+  setDurationMenuOpen(false);
+  setDetailMenuOpen(false);
+}
+
+function switchNote(id) {
+  if (!notebook.notes[id] || id === notebook.activeId) return;
+  pauseForDocumentChange();
   notebook.activeId = id;
   record = normalizeNote(activeNote());
   deadline = null;
@@ -556,10 +541,11 @@ function switchNote(id) {
 }
 
 function startNewNote() {
+  pauseForDocumentChange();
   const dateKey = localDateKey();
   let id = `note-${Date.now().toString(36)}`;
   while (notebook.notes[id]) id = `note-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 5)}`;
-  const note = makeNote({ id });
+  const note = makeNote({ id, mode: record.mode, duration: record.duration, format: { ...record.format } });
   note.dateKey = dateKey;
   notebook.notes[id] = note;
   notebook.activeId = id;
@@ -569,175 +555,92 @@ function startNewNote() {
   $("#task-title").value = "";
   updateNotePicker();
   updateModeAndFormat();
-  renderEditor({ focusIndex: 0, selectionStart: 0, selectionEnd: 0 });
+  renderEditor({ focus: true, selectionStart: 0, selectionEnd: 0 });
   updateTimerDisplay();
   saveNotebook();
 }
 
-function onBeforeInput(event) {
-  const textarea = event.target.closest(".note-line");
-  if (!textarea) return;
-  if (event.inputType === "historyUndo") {
+function commitTextEdit(change, before, { softBreak = false, groupKey = "", stamp = makeStamp() } = {}) {
+  history.capture(cursorSnapshot(before), { groupKey });
+  record.lines = AikariviText.replace(record.lines, { ...change, softBreak, stamp });
+  if (!record.title.trim() && record.lines.some((line) => line.text.trim())) {
+    assignTimeBasedTitle(record, dateForUntitledNote(record));
+  }
+  renderRows();
+  updateLineCount();
+  history.didEdit(cursorSnapshot());
+  saveNotebook({ quiet: true });
+}
+
+function beforeTextInput(event) {
+  if (event.inputType === "historyUndo" || event.inputType === "historyRedo") {
     event.preventDefault();
-    undo();
+    pendingInput = null;
+    if (event.inputType === "historyUndo") undo();
+    else redo();
     return;
   }
-  if (event.inputType === "historyRedo") {
-    event.preventDefault();
-    redo();
-    return;
-  }
-  const groupable = event.inputType === "insertText" || event.inputType === "deleteContentBackward" || event.inputType === "deleteContentForward";
-  const groupKey = groupable ? `${notebook.activeId}:${textarea.dataset.index}:${event.inputType}` : "";
-  captureHistory(textarea, groupKey);
+  pendingInput = { text: textInput.value, ...inputSelection(), inputType: event.inputType, stamp: makeStamp() };
 }
 
-function onInput(event) {
-  const textarea = event.target.closest(".note-line");
-  if (!textarea) return;
-  const index = Number(textarea.dataset.index);
-  const line = record.lines[index];
-  if (!line) return;
-  const hadContent = record.lines.some((entry) => entry.text.trim());
-  const oldText = line.text;
-  line.text = textarea.value.replace(/\r\n?/g, "\n");
-  if (!hadContent && record.lines.some((entry) => entry.text.trim())) assignTimeBasedTitle(record, dateForUntitledNote(record));
-  if (!oldText.length && line.text.length && !line.stamp) line.stamp = makeStamp();
-  resizeTextarea(textarea);
-  paintStamp(textarea.closest(".note-row"), line, index);
-  updateTimestampLayout();
-  updateLineCount();
-  saveNotebook({ quiet: true });
+function onTextInput(event) {
+  const beforeText = AikariviText.text(record.lines);
+  const before = pendingInput?.text === beforeText ? pendingInput : null;
+  const change = AikariviText.change(beforeText, textInput.value, before || {});
+  pendingInput = null;
+  if (!change) return;
+  const inputType = event.inputType || before?.inputType || "";
+  const groupable = ["insertText", "deleteContentBackward", "deleteContentForward"].includes(inputType)
+    && !change.insert.includes("\n") && !beforeText.slice(change.from, change.to).includes("\n");
+  const groupKey = composing || event.isComposing ? `${notebook.activeId}:composition`
+    : groupable ? `${notebook.activeId}:${inputType}` : "";
+  commitTextEdit(change, before || { ...inputSelection(), start: change.from, end: change.to }, {
+    groupKey, stamp: before ? before.stamp : makeStamp(),
+  });
+  revealCaret();
 }
 
-function splitLine(textarea) {
-  const index = Number(textarea.dataset.index);
-  const line = record.lines[index];
-  if (!line) return;
-  captureHistory(textarea);
-  const before = line.text.slice(0, textarea.selectionStart);
-  const after = line.text.slice(textarea.selectionEnd);
-  line.text = before;
-  const nextLine = { text: after, stamp: after.length ? makeStamp() : null };
-  record.lines.splice(index + 1, 0, nextLine);
-  history.groupKey = "";
-  renderEditor({ focusIndex: index + 1, selectionStart: 0, selectionEnd: 0 });
-  updateLineCount();
-  saveNotebook({ quiet: true });
+function insertSoftLineBreak() {
+  const before = inputSelection();
+  const change = { from: before.start, to: before.end, insert: "\n" };
+  textInput.setRangeText(change.insert, before.start, before.end, "end");
+  commitTextEdit(change, before, { softBreak: true });
+  pendingInput = null;
+  revealCaret();
 }
 
-function insertSoftLineBreak(textarea) {
-  const index = Number(textarea.dataset.index);
-  const line = record.lines[index];
-  if (!line) return;
-  captureHistory(textarea);
-  const before = line.text.slice(0, textarea.selectionStart);
-  const after = line.text.slice(textarea.selectionEnd);
-  line.text = `${before}\n${after}`;
-  history.groupKey = "";
-  const caret = before.length + 1;
-  renderEditor({ focusIndex: index, selectionStart: caret, selectionEnd: caret });
-  saveNotebook({ quiet: true });
+function revealCaret() {
+  const caretOffset = textInput.selectionDirection === "backward" ? textInput.selectionStart : textInput.selectionEnd;
+  const position = AikariviText.locate(record.lines, caretOffset);
+  const row = rowNodes.get(record.lines[position.index]);
+  const node = row?.querySelector(".line-text")?.firstChild;
+  if (!node) return;
+  const range = document.createRange();
+  range.setStart(node, Math.min(caretOffset - position.start, node.length));
+  range.collapse(true);
+  const caret = range.getBoundingClientRect();
+  const viewport = editorViewport.getBoundingClientRect();
+  if (!caret.height) return;
+  if (caret.top < viewport.top) textInput.scrollTop -= viewport.top - caret.top;
+  else if (caret.bottom > viewport.bottom) textInput.scrollTop += caret.bottom - viewport.bottom;
+  syncEditorScroll();
 }
 
-function mergeLine(textarea, direction) {
-  const index = Number(textarea.dataset.index);
-  const otherIndex = direction === "previous" ? index - 1 : index + 1;
-  if (otherIndex < 0 || otherIndex >= record.lines.length) return false;
-  const line = record.lines[index];
-  const other = record.lines[otherIndex];
-  captureHistory(textarea);
-  if (direction === "previous") {
-    const caret = other.text.length;
-    other.text += line.text;
-    record.lines.splice(index, 1);
-    history.groupKey = "";
-    renderEditor({ focusIndex: otherIndex, selectionStart: caret, selectionEnd: caret });
-  } else {
-    const caret = line.text.length;
-    line.text += other.text;
-    record.lines.splice(otherIndex, 1);
-    history.groupKey = "";
-    renderEditor({ focusIndex: index, selectionStart: caret, selectionEnd: caret });
-  }
-  updateLineCount();
-  saveNotebook({ quiet: true });
-  return true;
-}
-
-function onPaste(event) {
-  const textarea = event.target.closest(".note-line");
-  const pastedText = event.clipboardData?.getData("text/plain").replace(/\r\n?/g, "\n");
-  if (!textarea || !pastedText?.includes("\n")) return;
-  event.preventDefault();
-  const index = Number(textarea.dataset.index);
-  const line = record.lines[index];
-  if (!line) return;
-  captureHistory(textarea);
-  const before = line.text.slice(0, textarea.selectionStart);
-  const after = line.text.slice(textarea.selectionEnd);
-  const parts = pastedText.split("\n");
-  const firstText = before + parts[0];
-  const finalText = parts.at(-1) + after;
-  const firstStamp = line.stamp || (!line.text.length && firstText.length ? makeStamp() : null);
-  const inserted = [{ text: firstText, stamp: firstStamp }];
-  for (const text of parts.slice(1, -1)) inserted.push({ text, stamp: text.length ? makeStamp() : null });
-  inserted.push({ text: finalText, stamp: finalText.length ? makeStamp() : null });
-  record.lines.splice(index, 1, ...inserted);
-  if (!record.title.trim() && record.lines.some((entry) => entry.text.trim())) assignTimeBasedTitle(record, dateForUntitledNote(record));
-  history.groupKey = "";
-  const finalIndex = index + inserted.length - 1;
-  renderEditor({ focusIndex: finalIndex, selectionStart: parts.at(-1).length, selectionEnd: parts.at(-1).length });
-  updateLineCount();
-  saveNotebook({ quiet: true });
-}
-
-function onEditorKeyDown(event) {
-  const textarea = event.target.closest(".note-line");
-  if (!textarea) return;
-  const index = Number(textarea.dataset.index);
-  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {
+function editorKeyDown(event) {
+  if (event.isComposing || composing) return;
+  const command = event.metaKey || event.ctrlKey;
+  if (command && event.key.toLowerCase() === "z") {
     event.preventDefault();
     if (event.shiftKey) redo();
     else undo();
-    return;
-  }
-  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "y") {
+  } else if (command && event.key.toLowerCase() === "y") {
     event.preventDefault();
     redo();
-    return;
-  }
-  if (event.key === "Enter" && (event.shiftKey || event.metaKey || event.altKey)) {
+  } else if (event.key === "Enter" && (command || event.shiftKey || event.altKey)) {
     event.preventDefault();
-    insertSoftLineBreak(textarea);
-    return;
-  }
-  if (event.key === "Enter" && !event.shiftKey && !event.altKey && !event.metaKey && !event.ctrlKey) {
-    event.preventDefault();
-    splitLine(textarea);
-    return;
-  }
-  if (event.key === "Backspace" && textarea.selectionStart === 0 && textarea.selectionEnd === 0 && index > 0) {
-    event.preventDefault();
-    mergeLine(textarea, "previous");
-    return;
-  }
-  if (event.key === "Delete" && textarea.selectionStart === textarea.value.length && textarea.selectionEnd === textarea.value.length && index < record.lines.length - 1) {
-    event.preventDefault();
-    mergeLine(textarea, "next");
-    return;
-  }
-  if (event.key === "ArrowUp" && textarea.selectionStart === 0 && textarea.selectionEnd === 0 && index > 0) {
-    event.preventDefault();
-    const previous = editor.querySelector(`.note-line[data-index="${index - 1}"]`);
-    previous.focus();
-    previous.setSelectionRange(previous.value.length, previous.value.length);
-  }
-  if (event.key === "ArrowDown" && textarea.selectionStart === textarea.value.length && textarea.selectionEnd === textarea.value.length && index < record.lines.length - 1) {
-    event.preventDefault();
-    const next = editor.querySelector(`.note-line[data-index="${index + 1}"]`);
-    next.focus();
-    next.setSelectionRange(0, 0);
+    insertSoftLineBreak();
+  } else if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "PageUp", "PageDown"].includes(event.key)) {
+    history.breakGroup();
   }
 }
 
@@ -926,6 +829,7 @@ function importMarkdown(file) {
     note.format = parsed.format;
     note.lines = parsed.lines;
     note.dateKey = localDateKey();
+    pauseForDocumentChange();
     notebook.notes[id] = note;
     notebook.activeId = id;
     record = note;
@@ -958,12 +862,40 @@ function init() {
   renderEditor();
   ensureTicker();
 
-  editor.addEventListener("beforeinput", onBeforeInput);
-  editor.addEventListener("paste", onPaste);
-  editor.addEventListener("input", onInput);
-  editor.addEventListener("keydown", onEditorKeyDown);
-  editor.addEventListener("focusin", () => { history.groupKey = ""; });
-  editor.addEventListener("focusout", () => { history.groupKey = ""; });
+  textInput.addEventListener("beforeinput", beforeTextInput);
+  textInput.addEventListener("input", onTextInput);
+  textInput.addEventListener("keydown", editorKeyDown);
+  textInput.addEventListener("scroll", syncEditorScroll);
+  textInput.addEventListener("pointerdown", () => history.breakGroup());
+  textInput.addEventListener("blur", () => history.breakGroup());
+  textInput.addEventListener("paste", () => history.breakGroup());
+  textInput.addEventListener("compositionstart", () => {
+    composing = true;
+    history.breakGroup();
+  });
+  textInput.addEventListener("compositionend", () => {
+    composing = false;
+    history.breakGroup();
+  });
+  editorViewport.addEventListener("pointerdown", (event) => {
+    if (event.target === textInput) return;
+    const row = event.target.closest(".note-row");
+    let start = 0;
+    if (row) {
+      const index = Number(row.dataset.index);
+      start = record.lines.slice(0, index).reduce((total, line) => total + line.text.length + 1, 0);
+    }
+    event.preventDefault();
+    textInput.focus({ preventScroll: true });
+    textInput.setSelectionRange(start, start);
+    history.breakGroup();
+  });
+  const editorResize = new ResizeObserver(() => {
+    updateTimestampLayout();
+    syncEditorScroll();
+  });
+  editorResize.observe(editorViewport);
+  window.addEventListener("resize", updateTimestampLayout);
 
   $("#task-title").addEventListener("input", (event) => {
     record.title = event.target.value;
