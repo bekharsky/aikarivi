@@ -12,6 +12,7 @@ let deadline = null;
 let tickHandle = null;
 let lastTimerPersistAt = 0;
 let storageAvailable = true;
+let notebookNeedsSave = false;
 let saveMessageHandle = null;
 let documentMenu = null;
 let durationMenu = null;
@@ -22,20 +23,22 @@ function localDateKey(date = new Date()) {
 }
 
 function makeNote({ id = localDateKey(), title = "", mode = "countdown", duration = 3600, lines, format } = {}) {
-  const openedAt = new Date().toISOString();
+  const opened = new Date();
+  const openedAt = opened.toISOString();
+  const titleAuto = !String(title).trim();
   return {
     id,
-    title,
-    titleAuto: false,
+    title: titleAuto ? timeBasedTitle(opened) : String(title),
+    titleAuto,
     openedAt,
-    dateKey: localDateKey(),
+    dateKey: localDateKey(opened),
     mode,
     duration,
     remaining: duration,
     phase: "idle",
     format: format || { hours: true, minutes: true, seconds: true, tenths: false },
     lines: lines?.length ? lines : [{ text: "", stamp: null }],
-    updatedAt: new Date().toISOString(),
+    updatedAt: openedAt,
   };
 }
 
@@ -50,14 +53,19 @@ function readNotebook() {
     storageAvailable = false;
   }
   const note = makeNote();
+  notebookNeedsSave = true;
   return { activeId: note.id, notes: { [note.id]: note } };
 }
 
 const notebook = readNotebook();
 const todayId = localDateKey();
-if (!notebook.notes[todayId]) notebook.notes[todayId] = makeNote();
+if (!notebook.notes[todayId]) {
+  notebook.notes[todayId] = makeNote();
+  notebookNeedsSave = true;
+}
 if (!notebook.notes[notebook.activeId]) {
   notebook.activeId = todayId;
+  notebookNeedsSave = true;
 }
 
 function activeNote() {
@@ -65,8 +73,11 @@ function activeNote() {
 }
 
 function normalizeNote(note) {
+  const previousTitle = note.title;
+  const previousTitleAuto = note.titleAuto;
+  const previousOpenedAt = note.openedAt;
   note.title = String(note.title ?? "");
-  note.titleAuto = Boolean(note.titleAuto) || /^\d{1,2}:\d{2}$/.test(note.title.trim());
+  note.titleAuto = !note.title.trim() || Boolean(note.titleAuto) || /^\d{1,2}:\d{2}$/.test(note.title.trim());
   note.duration = Math.max(1, Number(note.duration) || 3600);
   note.remaining = Number.isFinite(Number(note.remaining)) ? Number(note.remaining) : note.duration;
   if (!note.format || typeof note.format !== "object") note.format = { hours: true, minutes: true, seconds: true, tenths: false };
@@ -75,13 +86,18 @@ function normalizeNote(note) {
   const firstStampedLine = note.lines.find((line) => line.text.trim() && line.stamp?.wallClock);
   const stampedDate = firstStampedLine ? new Date(firstStampedLine.stamp.wallClock) : null;
   const fallbackDate = new Date(note.updatedAt || `${note.dateKey || localDateKey()}T12:00:00`);
-  note.openedAt = note.openedAt || (stampedDate && !Number.isNaN(stampedDate.valueOf()) ? stampedDate.toISOString() :
-    !Number.isNaN(fallbackDate.valueOf()) ? fallbackDate.toISOString() : new Date().toISOString());
+  const openedDate = note.openedAt ? new Date(note.openedAt) : null;
+  note.openedAt = openedDate && !Number.isNaN(openedDate.valueOf()) ? openedDate.toISOString() :
+    stampedDate && !Number.isNaN(stampedDate.valueOf()) ? stampedDate.toISOString() :
+    !Number.isNaN(fallbackDate.valueOf()) ? fallbackDate.toISOString() : new Date().toISOString();
   if (note.titleAuto) {
     const date = new Date(note.openedAt);
     const legacyTime = note.title.trim().match(/^(\d{1,2}):(\d{2})$/);
     if (legacyTime && !Number.isNaN(date.valueOf())) date.setHours(Number(legacyTime[1]), Number(legacyTime[2]), 0, 0);
     if (!Number.isNaN(date.valueOf())) note.title = timeBasedTitle(date);
+  }
+  if (note.title !== previousTitle || note.titleAuto !== previousTitleAuto || note.openedAt !== previousOpenedAt) {
+    notebookNeedsSave = true;
   }
   if (!["countdown", "clock"].includes(note.mode)) note.mode = "countdown";
   if (!["idle", "running", "paused", "overtime"].includes(note.phase)) note.phase = "idle";
@@ -98,6 +114,7 @@ function saveNotebook({ quiet = false } = {}) {
   record.updatedAt = new Date().toISOString();
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(notebook));
+    notebookNeedsSave = false;
     storageAvailable = true;
     setSaveState(quiet ? "Saved on this device" : "Saved locally");
   } catch (_) {
@@ -335,8 +352,7 @@ function updateModeAndFormat() {
   document.querySelectorAll("[data-unit]").forEach((button) => {
     const unit = button.dataset.unit;
     const selected = Boolean(record.format[unit]);
-    button.classList.toggle("is-selected", selected);
-    button.setAttribute("aria-checked", String(selected));
+    AikariviUI.setMenuItemSelected(button, selected);
     if (unit === "tenths") button.disabled = !record.format.seconds;
   });
   const detailLabel = formatDetailLabel();
@@ -528,9 +544,6 @@ function switchNote(id) {
   record = normalizeNote(activeNote());
   deadline = null;
   resetHistory();
-  if (!record.title.trim() && record.lines.some((line) => line.text.trim())) {
-    assignTimeBasedTitle(record, dateForUntitledNote(record));
-  }
   $("#task-title").value = record.title;
   updateNotePicker();
   updateModeAndFormat();
@@ -551,7 +564,7 @@ function startNewNote() {
   record = note;
   deadline = null;
   resetHistory();
-  $("#task-title").value = "";
+  $("#task-title").value = record.title;
   updateNotePicker();
   updateModeAndFormat();
   renderEditor({ focus: true, selectionStart: 0, selectionEnd: 0 });
@@ -818,9 +831,7 @@ function importMarkdown(file) {
     const parsed = parseMarkdown(String(reader.result || ""), title);
     let id = `import-${Date.now().toString(36)}`;
     while (notebook.notes[id]) id = `import-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 5)}`;
-    const note = makeNote(parsed);
-    note.id = id;
-    note.title = title;
+    const note = makeNote({ ...parsed, id, title });
     note.duration = parsed.duration;
     note.remaining = parsed.remaining ?? parsed.duration;
     note.phase = parsed.remaining == null ? "idle" : "paused";
@@ -834,9 +845,6 @@ function importMarkdown(file) {
     record = note;
     deadline = null;
     resetHistory();
-    if (!record.title.trim() && record.lines.some((line) => line.text.trim())) {
-      assignTimeBasedTitle(record);
-    }
     $("#task-title").value = record.title;
     updateNotePicker();
     updateModeAndFormat();
@@ -859,13 +867,26 @@ function init() {
   detailMenu = new AikariviUI.Popover({
     root: $("#detail-menu"), trigger: $("#detail-trigger"), panel: $("#detail-popover"),
   });
+  const timestampUnits = [
+    { unit: "hours", label: "Hours", accessibleLabel: "Show hours" },
+    { unit: "minutes", label: "Minutes", accessibleLabel: "Show minutes" },
+    { unit: "seconds", label: "Seconds", accessibleLabel: "Show seconds" },
+    { unit: "tenths", label: "Tenths", accessibleLabel: "Show tenths of a second" },
+  ];
+  $("#timestamp-unit-list").replaceChildren(...timestampUnits.map(({ unit, label, accessibleLabel }) => {
+    const selected = Boolean(record.format[unit]);
+    const item = AikariviUI.createMenuItem({
+      label, role: "menuitemcheckbox", selected,
+      leading: AikariviUI.createCheckIndicator(selected),
+    });
+    item.dataset.unit = unit;
+    item.setAttribute("aria-label", accessibleLabel);
+    return item;
+  }));
   if (!storageAvailable) setSaveState("Storage unavailable — notes stay in this tab");
-  const generatedTitle = !record.title.trim() && record.lines.some((line) => line.text.trim())
-    ? assignTimeBasedTitle(record, dateForUntitledNote(record))
-    : false;
-  $("#task-title").value = record.title || "";
+  $("#task-title").value = record.title;
   updateNotePicker();
-  if (generatedTitle) saveNotebook({ quiet: true });
+  if (notebookNeedsSave) saveNotebook({ quiet: true });
   updateModeAndFormat();
   updateTimerDisplay();
   renderEditor();
@@ -917,7 +938,10 @@ function init() {
     title.focus();
     title.select();
   });
-  $("#task-title").addEventListener("blur", updateNotePicker);
+  $("#task-title").addEventListener("blur", () => {
+    if (assignTimeBasedTitle(record, dateForUntitledNote(record))) saveNotebook({ quiet: true });
+    updateNotePicker();
+  });
   $("#new-note-button").addEventListener("click", startNewNote);
   $("#export-button").addEventListener("click", downloadMarkdown);
   $("#import-button").addEventListener("click", () => $("#file-input").click());

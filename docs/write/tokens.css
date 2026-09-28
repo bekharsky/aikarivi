@@ -21,6 +21,7 @@
   --color-border-subtle: rgba(38, 52, 58, .055);
   --color-border-control: rgba(38, 52, 58, .1);
   --color-border-strong: rgba(38, 52, 58, .2);
+  --color-gutter-divider: var(--color-border);
   --color-segment-track: rgba(38, 52, 58, .035);
   --color-selection: rgba(110, 155, 128, .25);
   --color-shadow-soft: rgba(38, 52, 58, .025);
@@ -97,7 +98,6 @@
   --transport-size: 29px;
   --icon-size-small: 14px;
   --icon-size: 16px;
-  --icon-size-document: 18px;
   --icon-size-transport: 20px;
   --icon-stroke: 1.45;
   --icon-stroke-strong: 1.55;
@@ -141,10 +141,12 @@
   --new-document-padding-inline: var(--space-4);
   --editor-min-height: 180px;
   --editor-padding-inline: 15px;
+  --editor-padding-start: var(--space-4);
   --editor-padding-top: 9px;
   --editor-padding-bottom: 7px;
   --editor-gutter-width: 73px;
-  --editor-gutter-gap: var(--space-5);
+  --editor-gutter-gap: var(--space-8);
+  --editor-gutter-divider-offset: calc(var(--editor-gutter-gap) / 2);
   --editor-mirror-visibility: visible;
   --editor-input-color: var(--color-transparent);
   --editor-selection-color: var(--color-transparent);
@@ -184,7 +186,8 @@
     --font-size-timer: var(--font-size-body);
     --font-size-stamp: var(--font-size-caption);
     --editor-padding-inline: var(--space-5);
-    --editor-gutter-gap: var(--space-4);
+    --editor-padding-start: var(--space-2);
+    --editor-gutter-gap: var(--space-7);
     --footer-height: 25px;
     --footer-font-size: var(--font-size-micro);
     --timer-min-width: 70px;

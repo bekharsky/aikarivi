@@ -121,11 +121,44 @@ const AikariviUI = (() => {
     }
   }
 
-  class SelectMenu extends Popover {
-    constructor({ list, onChange, ...options }) {
-      super(options);
+  function createCheckIndicator(selected = false) {
+    const indicator = document.createElement("span");
+    indicator.className = "ui-menu-check";
+    indicator.classList.toggle("is-selected", selected);
+    indicator.setAttribute("aria-hidden", "true");
+    return indicator;
+  }
+
+  function setMenuItemSelected(item, selected) {
+    item.classList.toggle("is-selected", selected);
+    if (["menuitemradio", "menuitemcheckbox"].includes(item.getAttribute("role"))) {
+      item.setAttribute("aria-checked", String(selected));
+    }
+    item.querySelector(".ui-menu-check")?.classList.toggle("is-selected", selected);
+  }
+
+  function createMenuItem({ label, value, role = "menuitem", selected = false, leading = null }) {
+    const item = document.createElement("button");
+    item.type = "button";
+    item.className = "ui-menu-item";
+    item.setAttribute("role", role);
+    item.setAttribute("tabindex", "-1");
+    if (value !== undefined) item.dataset.selectValue = String(value);
+    if (leading) item.append(leading);
+    const text = document.createElement("span");
+    text.className = "ui-menu-label";
+    text.textContent = label;
+    item.append(text);
+    setMenuItemSelected(item, selected);
+    return item;
+  }
+
+  class SelectMenu {
+    constructor({ list, onChange, renderItem = createMenuItem, ...options }) {
+      this.popover = new Popover(options);
       this.list = list;
       this.onChange = onChange;
+      this.renderItem = renderItem;
       list.addEventListener("click", (event) => {
         const item = event.target.closest("[data-select-value]");
         if (!item || !list.contains(item) || item.disabled) return;
@@ -135,30 +168,26 @@ const AikariviUI = (() => {
       });
     }
 
+    get opened() { return this.popover.opened; }
+
+    open(options) { this.popover.open(options); }
+
+    close(options) { this.popover.close(options); }
+
     setOptions(options, selectedValue) {
-      const focused = this.panel.contains(document.activeElement) ? document.activeElement.dataset.selectValue : null;
+      const { panel, trigger } = this.popover;
+      const focused = panel.contains(document.activeElement) ? document.activeElement.dataset.selectValue : null;
       const fragment = document.createDocumentFragment();
       options.forEach(({ value, label }) => {
-        const item = document.createElement("button");
-        item.type = "button";
-        item.className = "ui-menu-item ui-menu-item--check";
-        item.setAttribute("role", "menuitemradio");
-        item.setAttribute("tabindex", "-1");
-        item.dataset.selectValue = String(value);
         const selected = String(value) === String(selectedValue);
-        item.classList.toggle("is-selected", selected);
-        item.setAttribute("aria-checked", String(selected));
+        const item = this.renderItem({ value, label, role: "menuitemradio", selected });
         item.title = label;
-        const text = document.createElement("span");
-        text.className = "ui-menu-label";
-        text.textContent = label;
-        item.append(text);
         fragment.append(item);
       });
       this.list.replaceChildren(fragment);
-      this.trigger.disabled = options.length === 0;
+      trigger.disabled = options.length === 0;
       if (this.opened) {
-        this.position();
+        this.popover.position();
         if (focused !== null) {
           const item = [...this.list.children].find((candidate) => candidate.dataset.selectValue === focused);
           if (item) item.focus({ preventScroll: true });
@@ -180,5 +209,5 @@ const AikariviUI = (() => {
   });
   window.addEventListener("resize", () => activePopover?.position());
 
-  return Object.freeze({ Popover, SelectMenu });
+  return Object.freeze({ Popover, SelectMenu, createMenuItem, createCheckIndicator, setMenuItemSelected });
 })();

@@ -8,8 +8,8 @@ plain JavaScript; there is no build step or external runtime dependency.
 | File | Responsibility |
 | --- | --- |
 | `tokens.css` | Semantic colors, typography, spacing, dimensions, radii, shadows, motion, and responsive token overrides. |
-| `components.css` | Shared buttons, icons, inputs, control groups, segmented controls, popover surfaces, and menu items. |
-| `components.js` | `Popover` and `SelectMenu`: toggling, exclusive opening, outside dismissal, focus, keyboard navigation, typeahead, selection, and viewport placement. |
+| `components.css` | Shared buttons, icons, inputs, control groups, segmented controls, separators, popover surfaces, menu items, and optional check indicators. |
+| `components.js` | `Popover`, `SelectMenu`, and composable menu-item factories: toggling, exclusive opening, outside dismissal, focus, keyboard navigation, typeahead, selection, and viewport placement. |
 | `styles.css` | App layout and editor geometry; visual values reference tokens. |
 | `app.js` | Notes, local storage, timer state, import/export, and wiring app actions into components. |
 | `editor-model.js` | Text transactions and timestamp metadata, independent of UI. |
@@ -22,9 +22,11 @@ Keep app-specific arrangement in `styles.css`.
 
 Every dropdown uses a full-width `ui-dropdown-trigger`, a `ui-popover` surface,
 and the shared `Popover` controller. Single-value selections use `SelectMenu`
-instead of native `<select>` elements. Menu choices use `ui-menu-item`; checked
-choices use `ui-menu-item--check`. Document choices and timestamp precision share
-the same selected, hover, focus, and disabled states.
+instead of native `<select>` elements. `SelectMenu` composes `Popover` with plain
+items from `createMenuItem`. Timestamp precision adds an optional leading
+`createCheckIndicator` to the same item component. Document choices have no
+checkboxes. Both share selected, hover, focus, and disabled states through
+`setMenuItemSelected` and the same color tokens.
 
 Menu choices support arrow keys, Home/End, typing a label, Enter/Space, and
 Escape. Repeated trigger clicks and outside clicks dismiss the menu. Opening

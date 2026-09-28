@@ -66,7 +66,6 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .document-title { display: flex; flex: 0 1 auto; align-items: center; gap: var(--document-title-gap); min-width: 0; }
 .title-field { display: grid; flex: 0 1 auto; grid-template-columns: minmax(0, 1fr); min-width: 0; }
 .document-actions { flex: 0 0 auto; margin-left: auto; }
-.document-icon { width: var(--icon-size-document); height: var(--icon-size-document); color: var(--color-accent); stroke-width: var(--icon-stroke-strong); }
 .document-popover { --popover-width: var(--popover-width-documents); }
 .note-picker { gap: var(--space-3); }
 .new-note-button { width: var(--new-document-width); padding-inline: var(--new-document-padding-inline); border-radius: var(--radius-item); }
@@ -100,7 +99,7 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .detail-trigger { font: var(--font-weight-emphasis) var(--font-size-control)/var(--line-height-compact) var(--font-mono); font-variant-numeric: tabular-nums; }
 .detail-popover { --popover-width: var(--popover-width-detail); }
 
-.note-card { display: flex; flex: 1 1 auto; flex-direction: column; min-height: var(--editor-min-height); padding: var(--editor-padding-top) var(--editor-padding-inline) var(--editor-padding-bottom); border: var(--border-width) solid var(--color-border-subtle); border-radius: var(--radius-editor); box-shadow: var(--shadow-editor); }
+.note-card { display: flex; flex: 1 1 auto; flex-direction: column; min-height: var(--editor-min-height); padding-block: var(--editor-padding-top) var(--editor-padding-bottom); padding-inline: var(--editor-padding-start) var(--editor-padding-inline); border: var(--border-width) solid var(--color-border-subtle); border-radius: var(--radius-editor); box-shadow: var(--shadow-editor); }
 .note-title, .title-sizing {
   grid-area: 1 / 1;
   width: 100%;
@@ -131,6 +130,7 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   overflow: hidden;
 }
 .note-editor { position: absolute; top: 0; left: 0; width: 100%; }
+.timestamp-divider { position: absolute; inset-block: 0; left: calc(var(--stamp-width) + var(--editor-gutter-divider-offset)); background: var(--color-gutter-divider); }
 .note-row { display: grid; grid-template-columns: var(--stamp-width) minmax(0, 1fr); column-gap: var(--stamp-gap); align-items: first baseline; min-width: 0; }
 .line-text, .note-input {
   font: var(--font-weight-regular) var(--font-size-editor)/var(--line-height-editor) var(--font-sans);

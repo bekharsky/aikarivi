@@ -8,12 +8,12 @@
     <title>Aikarivi — quiet writing space</title>
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./tokens.css?v=3" />
-    <link rel="stylesheet" href="./components.css?v=2" />
-    <link rel="stylesheet" href="./styles.css?v=25" />
+    <link rel="stylesheet" href="./tokens.css?v=5" />
+    <link rel="stylesheet" href="./components.css?v=3" />
+    <link rel="stylesheet" href="./styles.css?v=27" />
     <script defer src="./editor-model.js?v=3"></script>
-    <script defer src="./components.js?v=1"></script>
-    <script defer src="./app.js?v=27"></script>
+    <script defer src="./components.js?v=2"></script>
+    <script defer src="./app.js?v=28"></script>
   </head>
   <body>
     <header class="app-header">
@@ -32,10 +32,6 @@
 
       <section class="note-heading" aria-label="Document controls">
         <div class="document-title">
-          <svg class="ui-icon document-icon" viewBox="0 0 20 20" aria-hidden="true">
-            <path d="M5 2.75h6.2L16 7.5v9.75H5z" />
-            <path d="M11 2.75V8h5M8 11h5M8 14h5" />
-          </svg>
           <label class="visually-hidden" for="task-title">Document title</label>
           <div class="title-field">
             <span class="title-sizing" id="title-sizing" aria-hidden="true">Untitled note</span>
@@ -121,12 +117,7 @@
             </button>
             <div class="ui-popover ui-popover--end detail-popover" id="detail-popover" role="menu" aria-label="Timestamp detail" hidden>
               <p class="ui-popover-heading" aria-hidden="true">Timestamp detail</p>
-              <div class="ui-menu-list" role="group" aria-label="Timestamp units">
-                <button class="ui-menu-item ui-menu-item--check is-selected" type="button" role="menuitemcheckbox" tabindex="-1" data-unit="hours" aria-label="Show hours" aria-checked="true">Hours</button>
-                <button class="ui-menu-item ui-menu-item--check is-selected" type="button" role="menuitemcheckbox" tabindex="-1" data-unit="minutes" aria-label="Show minutes" aria-checked="true">Minutes</button>
-                <button class="ui-menu-item ui-menu-item--check is-selected" type="button" role="menuitemcheckbox" tabindex="-1" data-unit="seconds" aria-label="Show seconds" aria-checked="true">Seconds</button>
-                <button class="ui-menu-item ui-menu-item--check" type="button" role="menuitemcheckbox" tabindex="-1" data-unit="tenths" aria-label="Show tenths of a second" aria-checked="false">Tenths</button>
-              </div>
+              <div class="ui-menu-list" id="timestamp-unit-list" role="group" aria-label="Timestamp units"></div>
               <div class="ui-menu-section" role="group" aria-label="Timestamp presets">
                 <button class="ui-menu-item" type="button" role="menuitem" tabindex="-1" data-format="exact" data-menu-close>Exact time</button>
                 <button class="ui-menu-item" type="button" role="menuitem" tabindex="-1" data-format="minutesOnly" data-menu-close>Minutes only</button>
@@ -139,6 +130,7 @@
       <section class="ui-surface note-card" aria-label="Your local note">
         <div class="editor-scroll">
           <div class="note-editor" id="note-editor" aria-hidden="true"></div>
+          <div class="ui-separator ui-separator--vertical timestamp-divider" aria-hidden="true"></div>
           <textarea class="note-input" id="note-input" aria-label="Note text" placeholder="Start writing here…" spellcheck="true" autocapitalize="sentences" autocomplete="off" wrap="soft"></textarea>
         </div>
 
