@@ -1,0 +1,238 @@
+:root {
+  color-scheme: light;
+
+  /* Semantic colors: every component uses this palette. */
+  --color-page: #f5f7f5;
+  --color-surface: #fff;
+  --color-toolbar: rgba(255, 255, 255, .82);
+  --color-text: #26343a;
+  --color-text-secondary: #718080;
+  --color-text-muted: #9aa5a1;
+  --color-placeholder: #8b9894;
+  --color-stamp: #899591;
+  --color-accent: #6e9b80;
+  --color-hover: #e8f0ea;
+  --color-control-surface: #f2f5f2;
+  --color-disabled: #bdc5c2;
+  --color-overtime: #bd6a53;
+  --color-on-strong: #f7faf7;
+  --color-strong-hover: #3b4c51;
+  --color-border: rgba(38, 52, 58, .12);
+  --color-border-subtle: rgba(38, 52, 58, .055);
+  --color-border-control: rgba(38, 52, 58, .1);
+  --color-border-strong: rgba(38, 52, 58, .2);
+  --color-segment-track: rgba(38, 52, 58, .035);
+  --color-selection: rgba(110, 155, 128, .25);
+  --color-shadow-soft: rgba(38, 52, 58, .025);
+  --color-shadow-control: rgba(38, 52, 58, .09);
+  --color-shadow-popover: rgba(38, 52, 58, .14);
+  --color-transparent: transparent;
+
+  /* Type and spacing scales. */
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "SF Mono", "Roboto Mono", ui-monospace, monospace;
+  --font-size-micro: 9px;
+  --font-size-caption: 10px;
+  --font-size-control: 11px;
+  --font-size-mode: var(--font-size-control);
+  --font-size-header-control: var(--font-size-control);
+  --font-size-brand: 14px;
+  --font-size-body: 14px;
+  --font-size-title: 15px;
+  --font-size-editor: 15px;
+  --font-size-timer: 16px;
+  --font-size-stamp: 11px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-emphasis: 600;
+  --font-weight-control: 620;
+  --font-weight-heading: 650;
+  --font-weight-brand: 720;
+  --line-height-body: 1.5;
+  --line-height-compact: 1;
+  --line-height-menu: 1.4;
+  --line-height-editor: 24px;
+  --letter-spacing-title: -.02em;
+  --letter-spacing-brand: -.04em;
+  --letter-spacing-timer: -.045em;
+  --editor-tab-size: 4;
+
+  --space-px: 1px;
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 10px;
+  --space-6: 12px;
+  --space-7: 14px;
+  --space-8: 16px;
+  --space-9: 20px;
+  --space-10: 24px;
+
+  --radius-input: 4px;
+  --radius-item: 5px;
+  --radius-control: 6px;
+  --radius-track: 7px;
+  --radius-group: 8px;
+  --radius-toolbar: 9px;
+  --radius-popover: 10px;
+  --radius-editor: 11px;
+  --radius-round: 999px;
+  --border-width: 1px;
+  --focus-width: 2px;
+  --focus-offset: 3px;
+  --shadow-surface: 0 var(--space-1) var(--space-4) var(--color-shadow-soft);
+  --shadow-editor: 0 var(--space-1) var(--space-5) var(--color-shadow-soft);
+  --shadow-control: 0 var(--space-px) var(--focus-offset) var(--color-shadow-control);
+  --shadow-popover: 0 var(--space-7) 42px var(--color-shadow-popover);
+  --motion-control: 160ms;
+  --menu-typeahead-timeout: 700ms;
+  --motion-reduced: .01ms;
+  --opacity-disabled: .42;
+
+  /* Shared controls and popovers. */
+  --control-height: 30px;
+  --control-height-compact: 29px;
+  --icon-button-size: 28px;
+  --transport-size: 29px;
+  --icon-size-small: 14px;
+  --icon-size: 16px;
+  --icon-size-document: 18px;
+  --icon-size-transport: 20px;
+  --icon-stroke: 1.45;
+  --icon-stroke-strong: 1.55;
+  --chevron-size: 6px;
+  --chevron-stroke: 1.4px;
+  --check-size: 13px;
+  --check-radius: 3px;
+  --check-mark-width: 3px;
+  --check-mark-height: 6px;
+  --check-mark-rise: -60%;
+  --popover-gap: var(--space-4);
+  --popover-viewport-gutter: var(--space-8);
+  --popover-max-height: 320px;
+  --popover-width-documents: 320px;
+  --popover-width-detail: 210px;
+  --popover-width-duration: 320px;
+  --duration-input-width: 75px;
+  --duration-submit-width: 42px;
+  --z-header: 2;
+  --z-popover: 10;
+
+  /* Layout and editor metrics. */
+  --workspace-max-width: 1040px;
+  --workspace-inline-inset: 64px;
+  --workspace-min-height: 340px;
+  --workspace-top: 56px;
+  --workspace-bottom: var(--space-7);
+  --header-height: 49px;
+  --document-toolbar-height: 43px;
+  --document-toolbar-gap: var(--space-7);
+  --document-title-gap: var(--space-3);
+  --session-controls-height: 36px;
+  --session-controls-gap: var(--space-4);
+  --session-controls-display: grid;
+  --session-controls-wrap: nowrap;
+  --session-controls-justify: normal;
+  --session-readout-margin: 0;
+  --timer-controls-gap: var(--space-1);
+  --document-action-label-display: inline;
+  --new-document-width: auto;
+  --new-document-padding-inline: var(--space-4);
+  --editor-min-height: 180px;
+  --editor-padding-inline: 15px;
+  --editor-padding-top: 9px;
+  --editor-padding-bottom: 7px;
+  --editor-gutter-width: 73px;
+  --editor-gutter-gap: var(--space-5);
+  --editor-mirror-visibility: visible;
+  --editor-input-color: var(--color-transparent);
+  --editor-selection-color: var(--color-transparent);
+  --footer-height: 28px;
+  --footer-font-size: var(--font-size-caption);
+  --timer-min-width: 78px;
+  --status-dot-size: var(--space-3);
+  --brand-mark-width: var(--icon-size);
+  --brand-bar-width: var(--space-2);
+  --brand-bar-short: 7px;
+  --brand-bar-tall: var(--space-7);
+  --brand-bar-middle: var(--space-5);
+  --brand-bar-opacity-short: .65;
+  --brand-bar-opacity-middle: .8;
+}
+
+/* Breakpoints live here with the responsive token overrides. */
+@media (max-width: 900px) {
+  :root {
+    --workspace-max-width: 760px;
+    --workspace-inline-inset: 40px;
+    --session-controls-gap: var(--space-3);
+  }
+}
+@media (max-width: 600px) {
+  :root {
+    --workspace-inline-inset: 32px;
+    --workspace-top: 52px;
+    --workspace-bottom: var(--space-5);
+    --header-height: 45px;
+    --document-toolbar-height: 41px;
+    --document-toolbar-gap: var(--space-3);
+    --control-height-compact: 27px;
+    --transport-size: 27px;
+    --font-size-title: var(--font-size-body);
+    --font-size-mode: var(--font-size-caption);
+    --font-size-timer: var(--font-size-body);
+    --font-size-stamp: var(--font-size-caption);
+    --editor-padding-inline: var(--space-5);
+    --editor-gutter-gap: var(--space-4);
+    --footer-height: 25px;
+    --footer-font-size: var(--font-size-micro);
+    --timer-min-width: 70px;
+    --session-controls-display: flex;
+    --session-controls-wrap: wrap;
+    --session-controls-justify: space-between;
+    --session-controls-gap: var(--space-4);
+    --session-readout-margin: auto;
+    --timer-controls-gap: var(--space-px);
+    --document-action-label-display: none;
+    --new-document-width: var(--control-height);
+    --new-document-padding-inline: 0;
+  }
+}
+@media (max-width: 360px) {
+  :root {
+    --workspace-inline-inset: var(--space-10);
+    --font-size-brand: 13px;
+    --font-size-header-control: var(--font-size-caption);
+    --document-title-gap: var(--space-2);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion-control: var(--motion-reduced); }
+}
+@media (forced-colors: active) {
+  :root {
+    --color-page: Canvas;
+    --color-surface: Canvas;
+    --color-toolbar: Canvas;
+    --color-text: CanvasText;
+    --color-text-secondary: CanvasText;
+    --color-text-muted: GrayText;
+    --color-placeholder: GrayText;
+    --color-stamp: CanvasText;
+    --color-accent: Highlight;
+    --color-hover: ButtonFace;
+    --color-control-surface: ButtonFace;
+    --color-disabled: GrayText;
+    --color-overtime: CanvasText;
+    --color-border: ButtonText;
+    --color-border-subtle: ButtonText;
+    --color-border-control: ButtonText;
+    --color-border-strong: ButtonText;
+    --color-selection: Highlight;
+    --color-on-strong: HighlightText;
+    --editor-mirror-visibility: hidden;
+    --editor-input-color: var(--color-text);
+    --editor-selection-color: var(--color-on-strong);
+  }
+}

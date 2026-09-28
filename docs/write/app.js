@@ -13,6 +13,9 @@ let tickHandle = null;
 let lastTimerPersistAt = 0;
 let storageAvailable = true;
 let saveMessageHandle = null;
+let documentMenu = null;
+let durationMenu = null;
+let detailMenu = null;
 
 function localDateKey(date = new Date()) {
   return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
@@ -234,7 +237,8 @@ function updateTimerDisplay() {
   $("#play-button").setAttribute("aria-label", label);
   $("#play-button").title = label;
   $("#reset-button").disabled = phase === "idle";
-  $("#custom-minutes").value = Math.max(1, Math.round(record.duration / 60));
+  const customMinutes = $("#custom-minutes");
+  if (document.activeElement !== customMinutes) customMinutes.value = Math.max(1, Math.round(record.duration / 60));
   document.querySelectorAll("[data-mode]").forEach((button) => {
     const selected = button.dataset.mode === record.mode;
     button.classList.toggle("is-active", selected);
@@ -312,10 +316,7 @@ function setDuration(seconds) {
 }
 
 function setDurationMenuOpen(open) {
-  const menu = $("#duration-menu");
-  menu.classList.toggle("is-open", open);
-  $("#duration-popover").hidden = !open;
-  $("#timer-trigger").setAttribute("aria-expanded", String(open));
+  durationMenu.setOpen(open);
 }
 
 function formatDetailLabel() {
@@ -327,10 +328,7 @@ function formatDetailLabel() {
 }
 
 function setDetailMenuOpen(open) {
-  const menu = $("#detail-menu");
-  menu.classList.toggle("is-open", open);
-  $("#detail-popover").hidden = !open;
-  $("#detail-trigger").setAttribute("aria-expanded", String(open));
+  detailMenu.setOpen(open);
 }
 
 function updateModeAndFormat() {
@@ -338,7 +336,7 @@ function updateModeAndFormat() {
     const unit = button.dataset.unit;
     const selected = Boolean(record.format[unit]);
     button.classList.toggle("is-selected", selected);
-    button.setAttribute("aria-pressed", String(selected));
+    button.setAttribute("aria-checked", String(selected));
     if (unit === "tenths") button.disabled = !record.format.seconds;
   });
   const detailLabel = formatDetailLabel();
@@ -427,9 +425,7 @@ function updateTimestampLayout() {
   const sample = formatDuration(-largest, exact);
   if (context) context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
   const width = Math.ceil(context ? context.measureText(sample).width : sample.length * 7);
-  const gap = matchMedia("(max-width: 600px)").matches ? 8 : 10;
   editorViewport.style.setProperty("--stamp-width", `${width}px`);
-  editorViewport.style.setProperty("--stamp-gap", `${gap}px`);
   syncEditorGeometry();
 }
 
@@ -462,21 +458,17 @@ function syncTitleWidth() {
 
 function updateNotePicker() {
   syncTitleWidth();
-  const picker = $("#note-picker");
   const notes = Object.values(notebook.notes).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
-  picker.replaceChildren();
-  notes.forEach((note) => {
-    const option = document.createElement("option");
-    option.value = note.id;
+  const options = notes.map((note) => {
     const date = note.dateKey ? new Date(`${note.dateKey}T12:00:00`) : new Date(note.updatedAt);
     const dateLabel = Number.isNaN(date.valueOf()) ? "Saved note" : new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(date);
     const fallback = `${note.id === localDateKey() ? "Today" : "Note"} · ${dateLabel}`;
-    option.textContent = note.title.trim()
+    const label = note.title.trim()
       ? (note.titleAuto ? note.title.trim() : `${note.title.trim()} · ${dateLabel}`)
       : fallback;
-    picker.append(option);
+    return { value: note.id, label };
   });
-  picker.value = notebook.activeId;
+  documentMenu.setOptions(options, notebook.activeId);
 }
 
 function resetHistory() {
@@ -526,6 +518,7 @@ function pauseForDocumentChange() {
   }
   setDurationMenuOpen(false);
   setDetailMenuOpen(false);
+  documentMenu.close();
 }
 
 function switchNote(id) {
@@ -856,6 +849,16 @@ function importMarkdown(file) {
 }
 
 function init() {
+  documentMenu = new AikariviUI.SelectMenu({
+    root: $("#document-menu"), trigger: $("#note-picker"), panel: $("#document-popover"),
+    list: $("#document-options"), onChange: switchNote,
+  });
+  durationMenu = new AikariviUI.Popover({
+    root: $("#duration-menu"), trigger: $("#timer-trigger"), panel: $("#duration-popover"),
+  });
+  detailMenu = new AikariviUI.Popover({
+    root: $("#detail-menu"), trigger: $("#detail-trigger"), panel: $("#detail-popover"),
+  });
   if (!storageAvailable) setSaveState("Storage unavailable — notes stay in this tab");
   const generatedTitle = !record.title.trim() && record.lines.some((line) => line.text.trim())
     ? assignTimeBasedTitle(record, dateForUntitledNote(record))
@@ -915,7 +918,6 @@ function init() {
     title.select();
   });
   $("#task-title").addEventListener("blur", updateNotePicker);
-  $("#note-picker").addEventListener("change", (event) => switchNote(event.target.value));
   $("#new-note-button").addEventListener("click", startNewNote);
   $("#export-button").addEventListener("click", downloadMarkdown);
   $("#import-button").addEventListener("click", () => $("#file-input").click());
@@ -925,12 +927,6 @@ function init() {
   });
   $("#play-button").addEventListener("click", toggleTimer);
   $("#reset-button").addEventListener("click", resetTimer);
-  $("#timer-trigger").addEventListener("click", () => {
-    setDurationMenuOpen(!$("#duration-menu").classList.contains("is-open"));
-  });
-  $("#detail-trigger").addEventListener("click", () => {
-    setDetailMenuOpen(!$("#detail-menu").classList.contains("is-open"));
-  });
 
   document.querySelectorAll("[data-mode]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -969,22 +965,6 @@ function init() {
   $("#custom-duration-form").addEventListener("submit", (event) => {
     event.preventDefault();
     setDuration(Number($("#custom-minutes").value) * 60);
-  });
-
-  const dismissOpenMenusOutside = (event) => {
-    const durationMenu = $("#duration-menu");
-    if (durationMenu.classList.contains("is-open") && !durationMenu.contains(event.target)) setDurationMenuOpen(false);
-    const detailMenu = $("#detail-menu");
-    if (detailMenu.classList.contains("is-open") && !detailMenu.contains(event.target)) setDetailMenuOpen(false);
-  };
-  document.addEventListener("click", dismissOpenMenusOutside);
-  document.addEventListener("pointerdown", dismissOpenMenusOutside);
-  document.addEventListener("focusin", dismissOpenMenusOutside);
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      setDurationMenuOpen(false);
-      setDetailMenuOpen(false);
-    }
   });
 
   if (navigator.storage?.persist) navigator.storage.persist().catch(() => {});

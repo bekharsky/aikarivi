@@ -22,6 +22,7 @@ jobs:
         run: |
           node --version
           node --check docs/write/app.js
+          node --check docs/write/components.js
           node --check docs/write/editor-model.js
           node --check docs/write/sw.js
           node --test Tests/WebEditorTests/editor-model.test.cjs
