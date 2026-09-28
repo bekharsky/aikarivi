@@ -455,7 +455,13 @@ function updateLineCount() {
   $("#line-count").textContent = `${count} ${count === 1 ? "line" : "lines"}`;
 }
 
+function syncTitleWidth() {
+  const title = $("#task-title");
+  $("#title-sizing").textContent = title.value || title.placeholder;
+}
+
 function updateNotePicker() {
+  syncTitleWidth();
   const picker = $("#note-picker");
   const notes = Object.values(notebook.notes).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   picker.replaceChildren();
@@ -465,9 +471,9 @@ function updateNotePicker() {
     const date = note.dateKey ? new Date(`${note.dateKey}T12:00:00`) : new Date(note.updatedAt);
     const dateLabel = Number.isNaN(date.valueOf()) ? "Saved note" : new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(date);
     const fallback = `${note.id === localDateKey() ? "Today" : "Note"} · ${dateLabel}`;
-    option.textContent = note.id === notebook.activeId
-      ? (note.id === localDateKey() ? `Today · ${dateLabel}` : dateLabel)
-      : (note.title.trim() ? `${note.title.trim()} · ${dateLabel}` : fallback);
+    option.textContent = note.title.trim()
+      ? (note.titleAuto ? note.title.trim() : `${note.title.trim()} · ${dateLabel}`)
+      : fallback;
     picker.append(option);
   });
   picker.value = notebook.activeId;
@@ -900,6 +906,7 @@ function init() {
   $("#task-title").addEventListener("input", (event) => {
     record.title = event.target.value;
     record.titleAuto = false;
+    syncTitleWidth();
     saveNotebook({ quiet: true });
   });
   $("#edit-title-button").addEventListener("click", () => {

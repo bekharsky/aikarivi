@@ -8,9 +8,9 @@
     <title>Aikarivi — quiet writing space</title>
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./styles.css?v=22" />
+    <link rel="stylesheet" href="./styles.css?v=23" />
     <script defer src="./editor-model.js?v=3"></script>
-    <script defer src="./app.js?v=25"></script>
+    <script defer src="./app.js?v=26"></script>
   </head>
   <body>
     <header class="app-header">
@@ -34,7 +34,10 @@
             <path d="M11 2.75V8h5M8 11h5M8 14h5" />
           </svg>
           <label class="visually-hidden" for="task-title">Document title</label>
-          <input id="task-title" class="note-title" type="text" maxlength="120" placeholder="Untitled note" autocomplete="off" />
+          <div class="title-field">
+            <span class="title-sizing" id="title-sizing" aria-hidden="true">Untitled note</span>
+            <input id="task-title" class="note-title" type="text" size="1" maxlength="120" placeholder="Untitled note" autocomplete="off" />
+          </div>
           <button class="edit-title-button" id="edit-title-button" type="button" aria-label="Edit document title" title="Edit title">
             <svg viewBox="0 0 20 20" aria-hidden="true">
               <path d="m13.8 3.2 3 3M3.5 16.5l3.6-.8L16 6.8a2.1 2.1 0 0 0-3-3l-8.9 8.9z" />
@@ -44,6 +47,11 @@
         <div class="document-actions">
           <div class="note-picker">
             <label class="visually-hidden" for="note-picker">Choose a document</label>
+            <span class="document-picker-content" aria-hidden="true">
+              <svg viewBox="0 0 20 20"><path d="M6.5 3.5h9v12h-9zM3.5 6.5v10h9" /></svg>
+              <span class="document-picker-label">Documents</span>
+              <span class="picker-chevron"></span>
+            </span>
             <select id="note-picker" aria-label="Choose a document" title="Choose a saved document"></select>
           </div>
           <button class="new-note-button" id="new-note-button" type="button" aria-label="New document" title="Start a new document">
