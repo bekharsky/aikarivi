@@ -28,7 +28,9 @@ describe("local notes", () => {
       lines: [{ text: "work", stamp: null }],
     });
 
-    expect(note.title).toBe(timeBasedTitle(new Date(note.openedAt)));
+    const expectedDate = new Date(note.openedAt);
+    expectedDate.setHours(22, 55, 0, 0);
+    expect(note.title).toBe(timeBasedTitle(expectedDate));
     expect(note.titleAuto).toBe(true);
   });
 

@@ -280,13 +280,18 @@ jobs:
               --repo "$GITHUB_REPOSITORY" \
               --clobber
           else
+            notes_file="release-notes/${RELEASE_TAG}.md"
+            if [[ ! -f "$notes_file" ]]; then
+              echo "::error::Missing macOS release notes: $notes_file"
+              exit 1
+            fi
             gh release create "$RELEASE_TAG" \
               "$VERSIONED_ZIP" \
               "$STABLE_ZIP" \
               --repo "$GITHUB_REPOSITORY" \
               --target "$GITHUB_SHA" \
               --title "Aikarivi $RELEASE_VERSION" \
-              --generate-notes
+              --notes-file "$notes_file"
           fi
 
       - name: Upload current website download
