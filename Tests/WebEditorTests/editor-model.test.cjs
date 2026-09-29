@@ -1,6 +1,6 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const Text = require("../../docs/write/editor-model.js");
+const Text = require("../../web/src/editor/model.cjs");
 
 const stamp = (remaining) => ({ kind: "countdown", remaining, wallClock: "2026-09-28T06:00:00.000Z" });
 const line = (text = "", remaining = null) => ({ text, stamp: remaining === null ? null : stamp(remaining) });

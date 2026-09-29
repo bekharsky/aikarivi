@@ -1,4 +1,4 @@
-/* Reusable controls. App layout belongs in styles.css. */
+/* Shared primitives: features compose these instead of restyling native widgets. */
 .ui-button {
   display: inline-flex;
   flex: 0 0 auto;
@@ -16,39 +16,32 @@
   cursor: pointer;
   transition: background var(--motion-control) ease, color var(--motion-control) ease;
 }
-.ui-button:hover:not(:disabled), .ui-dropdown.is-open > .ui-dropdown-trigger {
-  background: var(--color-hover);
-  color: var(--color-text);
-}
+.ui-button:hover:not(:disabled),
+.ui-button[data-state="open"]:not(:disabled) { background: var(--color-hover); color: var(--color-text); }
 .ui-button:disabled { color: var(--color-disabled); cursor: default; }
 .ui-button--compact { min-height: var(--control-height-compact); }
 .ui-button--strong { background: var(--color-text); color: var(--color-on-strong); }
 .ui-button--strong:hover:not(:disabled) { background: var(--color-strong-hover); color: var(--color-on-strong); }
 .ui-button--subtle { background: var(--color-control-surface); font-weight: var(--font-weight-medium); }
 .ui-icon-button { display: inline-grid; place-items: center; width: var(--icon-button-size); height: var(--icon-button-size); min-height: 0; padding: 0; }
+.ui-icon-button > svg { width: var(--icon-size); height: var(--icon-size); }
 .ui-icon { display: block; flex: 0 0 auto; width: var(--icon-size); height: var(--icon-size); fill: none; stroke: currentColor; stroke-width: var(--icon-stroke); stroke-linecap: round; stroke-linejoin: round; }
 .ui-icon--small { width: var(--icon-size-small); height: var(--icon-size-small); }
 .ui-control-group { display: inline-flex; align-items: center; gap: var(--space-px); padding: var(--space-1); border: var(--border-width) solid var(--color-border-control); border-radius: var(--radius-group); }
 .ui-segmented { display: inline-flex; align-items: center; gap: var(--space-1); padding: var(--space-1); border-radius: var(--radius-track); background: var(--color-segment-track); }
 .ui-segmented > .ui-button { border-radius: var(--radius-item); }
-.ui-segmented > .ui-button.is-active { background: var(--color-surface); color: var(--color-text); box-shadow: var(--shadow-control); }
+.ui-segmented > .ui-button[data-state="checked"] { background: var(--color-surface); color: var(--color-text); box-shadow: var(--shadow-control); }
 .ui-input { min-height: var(--control-height); padding: 0 var(--space-4); border: var(--border-width) solid var(--color-border); border-radius: var(--radius-item); background: var(--color-surface); color: var(--color-text); font: var(--font-size-control) var(--font-mono); }
 .ui-surface { background: var(--color-surface); box-shadow: var(--shadow-surface); }
+.ui-surface--flat { background: var(--color-transparent); box-shadow: none; }
 .ui-separator { flex: 0 0 auto; background: var(--color-border); pointer-events: none; }
 .ui-separator--vertical { width: var(--border-width); }
 
-/* Shared dropdown: one trigger, palette, surface and interaction model. */
-.ui-dropdown { position: relative; }
-.ui-dropdown-trigger > * { pointer-events: none; }
-.ui-chevron { display: block; flex: 0 0 auto; width: var(--chevron-size); height: var(--chevron-size); border-right: var(--chevron-stroke) solid currentColor; border-bottom: var(--chevron-stroke) solid currentColor; transform: translateY(calc(-1 * var(--space-px))) rotate(45deg); }
+/* Radix owns focus, keyboard handling, collision detection and outside dismissal. */
 .ui-popover {
-  position: absolute;
-  top: calc(100% + var(--popover-gap));
-  left: 0;
-  right: auto;
   z-index: var(--z-popover);
-  width: min(var(--popover-width), calc(100vw - 2 * var(--popover-viewport-gutter)));
-  max-height: min(var(--popover-height-limit, 100vh), var(--popover-max-height));
+  width: min(var(--popover-width, var(--popover-width-default)), calc(100vw - 2 * var(--popover-viewport-gutter)));
+  max-height: min(var(--radix-popover-content-available-height, var(--popover-max-height)), var(--popover-max-height));
   padding: var(--space-6);
   overflow: auto;
   overscroll-behavior: contain;
@@ -57,13 +50,14 @@
   background: var(--color-surface);
   color: var(--color-text);
   box-shadow: var(--shadow-popover);
-  transform: translateX(var(--popover-shift-x, 0px));
+  transform-origin: var(--radix-popover-content-transform-origin, var(--radix-dropdown-menu-content-transform-origin, center));
+  animation: popover-enter var(--motion-control) ease-out;
 }
-.ui-popover--end { right: 0; left: auto; }
-.ui-dropdown[data-placement="top"] > .ui-popover { top: auto; bottom: calc(100% + var(--popover-gap)); }
+.ui-popover[data-state="closed"] { animation: none; }
 .ui-popover-heading { margin: 0 0 var(--space-4); color: var(--color-text-secondary); font-size: var(--font-size-control); font-weight: var(--font-weight-heading); }
 .ui-menu-list { display: grid; gap: var(--space-1); }
 .ui-menu-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-4);
@@ -77,23 +71,27 @@
   text-align: left;
   font: var(--font-weight-medium) var(--font-size-control)/var(--line-height-menu) var(--font-sans);
   cursor: pointer;
+  outline: none;
 }
-.ui-menu-item:hover:not(:disabled), .ui-menu-item:focus-visible { background: var(--color-hover); color: var(--color-text); }
-.ui-menu-item:focus-visible { outline-offset: calc(-1 * var(--focus-width)); }
-.ui-menu-item.is-selected { background: var(--color-hover); color: var(--color-text); }
-.ui-menu-item:disabled { opacity: var(--opacity-disabled); cursor: default; }
+.ui-menu-item[data-highlighted], .ui-menu-item[data-state="checked"], .ui-menu-item[data-state="on"] { background: var(--color-hover); color: var(--color-text); }
+.ui-menu-item[data-disabled] { opacity: var(--opacity-disabled); cursor: default; }
 .ui-menu-label { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ui-menu-check {
-  position: relative;
-  display: grid;
-  flex: 0 0 auto;
-  place-items: center;
-  width: var(--check-size);
-  height: var(--check-size);
-  border: var(--border-width) solid var(--color-border-strong);
-  border-radius: var(--check-radius);
-  color: var(--color-on-strong);
+.ui-check-item { padding-left: calc(var(--space-4) + var(--check-slot-width)); }
+.check-indicator { position: absolute; left: var(--space-4); display: grid; place-items: center; width: var(--check-slot-width); height: var(--check-slot-width); color: var(--color-accent); }
+.check-indicator > svg { width: var(--icon-size-small); height: var(--icon-size-small); stroke-width: var(--icon-stroke-strong); }
+.ui-separator--horizontal { height: var(--border-width); margin: var(--space-3) 0; }
+.ui-select-content { width: max-content; min-width: min(var(--radix-select-trigger-width), var(--popover-max-width-documents), calc(100vw - 2 * var(--popover-viewport-gutter))); max-width: min(var(--popover-max-width-documents), calc(100vw - 2 * var(--popover-viewport-gutter))); }
+.ui-select-option { cursor: default; }
+.ui-select-option .ui-menu-label { flex: 1 1 auto; }
+.ui-select-option[data-highlighted] { background: var(--color-hover); color: var(--color-text); }
+.ui-select-trigger { justify-content: flex-start; }
+.ui-select-chevron { display: inline-flex; align-items: center; margin-left: auto; }
+.ui-select-chevron > svg { width: var(--chevron-size); height: var(--chevron-size); stroke-width: var(--chevron-stroke); }
+
+@keyframes popover-enter {
+  from { opacity: 0; transform: scale(var(--popover-enter-scale)); }
+  to { opacity: 1; transform: scale(1); }
 }
-.ui-menu-check.is-selected { border-color: var(--color-accent); background: var(--color-accent); }
-.ui-menu-check.is-selected::after { position: absolute; top: 50%; left: calc((var(--check-size) - var(--check-mark-width)) / 2); width: var(--check-mark-width); height: var(--check-mark-height); border-right: var(--chevron-stroke) solid var(--color-on-strong); border-bottom: var(--chevron-stroke) solid var(--color-on-strong); content: ""; transform: translateY(var(--check-mark-rise)) rotate(45deg); pointer-events: none; }
-.ui-menu-section { display: grid; gap: var(--space-1); margin-top: var(--space-4); padding-top: var(--space-4); border-top: var(--border-width) solid var(--color-border-subtle); }
+@media (prefers-reduced-motion: reduce) {
+  .ui-popover { animation-duration: var(--motion-reduced); }
+}

@@ -1,8 +1,10 @@
 .DS_Store
+node_modules/
 .build/
 .swiftpm/
 dist/
 build/
+/docs/write/assets/
 DerivedData/
 Local.xcconfig
 **/xcuserdata/

@@ -1,5 +1,5 @@
-const CACHE_NAME = "aikarivi-web-shell-72d39caec145";
-const SHELL = ["./","./index.html","./manifest.webmanifest","../favicon.svg","./assets/index-C498vMIg.css","./assets/index-d6VsIGWA.js"];
+const CACHE_NAME = "__CACHE_NAME__";
+const SHELL = __SHELL_FILES__;
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

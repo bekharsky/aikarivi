@@ -251,10 +251,11 @@ The Pages download is `docs/assets/Aikarivi-macOS.zip`, containing the latest
 notarized `Aikarivi.app` with its icon and frameworks. Before the first GitHub
 Release, Pages uses the checked-in ZIP as a fallback.
 
-The local-first browser app is at `docs/write/`. It uses HTML, CSS, and plain
-JavaScript with no build step, framework, or CDN dependency. Its UI is split into
-semantic design tokens, shared controls and dropdown components, and app layout.
-See [the web UI structure](docs/write/README.md) before adding or changing controls.
+The local-first browser app is at `docs/write/`. Its React source lives in
+`web/`; Vite builds the static app into `docs/write/`, which GitHub Pages
+publishes alongside the rest of the site. React, Radix UI, and Lucide are
+bundled into the app, with no CDN runtime. To work on it, run `npm ci`,
+`npm test`, `npm run test:unit`, then `npm run build`. See [the web UI structure](docs/write/README.md).
 
 ## Layout
 
