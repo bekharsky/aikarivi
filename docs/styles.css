@@ -70,7 +70,7 @@ button { font: inherit; }
 .header-cta span, .button span { font-size: 17px; line-height: 0; }
 
 .hero {
-  padding: clamp(40px, 4.5vw, 64px) 0 72px;
+  padding: clamp(32px, 3.2vw, 46px) 0 72px;
   text-align: center;
 }
 .hero-copy { position: relative; z-index: 1; }
