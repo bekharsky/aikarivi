@@ -17,7 +17,10 @@ function offlineShell() {
         "./",
         "./index.html",
         "./manifest.webmanifest",
-        "../favicon.svg",
+        "../favicon.ico?v=timeline-2",
+        "../favicon-16.png?v=timeline-2",
+        "../favicon-32.png?v=timeline-2",
+        "../favicon.svg?v=timeline-2",
         ...Object.keys(bundle)
           .sort()
           .filter((fileName) => fileName !== "sw.js")

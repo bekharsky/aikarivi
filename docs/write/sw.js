@@ -1,5 +1,5 @@
-const CACHE_NAME = "aikarivi-web-shell-72d39caec145";
-const SHELL = ["./","./index.html","./manifest.webmanifest","../favicon.svg","./assets/index-C498vMIg.css","./assets/index-d6VsIGWA.js"];
+const CACHE_NAME = "aikarivi-web-shell-9e528bb2043e";
+const SHELL = ["./","./index.html","./manifest.webmanifest","../favicon.ico?v=timeline-2","../favicon-16.png?v=timeline-2","../favicon-32.png?v=timeline-2","../favicon.svg?v=timeline-2","./assets/index-Dwsq-Kj6.js","./assets/index-VTW4Tnc4.css"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

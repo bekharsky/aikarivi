@@ -9,7 +9,7 @@
   "theme_color": "#f5f7f5",
   "icons": [
     {
-      "src": "../favicon.svg",
+      "src": "../favicon.svg?v=timeline-2",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
