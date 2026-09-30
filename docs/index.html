@@ -14,8 +14,8 @@
     <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16.png?v=timeline-2" />
     <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png?v=timeline-2" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg?v=timeline-2" />
-    <link rel="stylesheet" href="./styles.css?v=notes-time" />
-    <script defer src="./app.js"></script>
+    <link rel="stylesheet" href="./styles.css?v=timelapse" />
+    <script defer src="./app.js?v=timelapse-2"></script>
   </head>
   <body>
     <header class="site-header">
@@ -52,7 +52,17 @@
 
         <div class="hero-visual page-width">
           <div class="hero-glow" aria-hidden="true"></div>
-          <img class="hero-shot" src="./assets/day-clean.png" width="1800" height="900" fetchpriority="high" alt="Aikarivi showing a day of notes with a timestamp on every line" />
+          <div class="hero-player">
+            <img class="hero-shot hero-poster" src="./assets/day-clean.png" width="1800" height="900" fetchpriority="high" alt="A day of notes in Aikarivi. Each new line receives a timestamp, then its text is typed character by character." />
+            <video id="hero-timelapse" class="hero-video" data-src="./assets/day-timelapse.mp4" width="1800" height="900" poster="./assets/day-clean.png" muted loop playsinline preload="none" aria-hidden="true"></video>
+          </div>
+          <div class="hero-playback-row">
+            <button class="hero-playback" type="button" aria-controls="hero-timelapse" hidden>
+              <svg class="playback-pause" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 3h3v10H4zm5 0h3v10H9z" /></svg>
+              <svg class="playback-play" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="m5 2 9 6-9 6z" /></svg>
+              <span>Play animation</span>
+            </button>
+          </div>
         </div>
       </section>
 
