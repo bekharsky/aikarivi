@@ -1,8 +1,8 @@
 # Aikarivi
 
 [![Buy Me a Coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=bekharsky&button_colour=FFDD00&font_colour=000000&font_family=Lato&outline_colour=000000&coffee_colour=ffffff)](https://buymeacoffee.com/bekharsky)
-[![Website](https://img.shields.io/badge/Website-GitHub%20Pages-222?logo=githubpages&logoColor=white)](https://bekharsky.github.io/aikarivi/) · [bekharsky.github.io/aikarivi](https://bekharsky.github.io/aikarivi/)
-[GitHub](https://github.com/bekharsky/aikarivi)
+
+[Website: bekharsky.github.io/aikarivi](https://bekharsky.github.io/aikarivi/) · [GitHub](https://github.com/bekharsky/aikarivi)
 
 A native macOS notepad that stamps each line with a time. It can count down
 a session timer, or it can stamp the time of day like an interstitial journal.
